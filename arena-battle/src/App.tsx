@@ -4,6 +4,7 @@ import { GameCanvas } from './components/GameCanvas';
 import { Preloader } from './components/Preloader';
 import { StartScreen } from './components/StartScreen';
 import { ThreeBackground } from './components/ThreeBackground';
+import { GameCursor } from './components/GameCursor';
 
 type Phase = 'start' | 'loading' | 'game';
 
@@ -213,6 +214,9 @@ export default function App() {
 
   return (
     <div id="app">
+      {/* Custom gaming cursor — desktop only */}
+      <GameCursor />
+
       {/* Start screen — dramatic landing page */}
       {phase === 'start' && <StartScreen onStart={handleStart} />}
 

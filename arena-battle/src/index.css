@@ -1200,6 +1200,81 @@ canvas {
 }
 
 /* ═══════════════════════════════════════════════════ */
+/* ── GAME CURSOR — Desktop only ──────────────────── */
+/* ═══════════════════════════════════════════════════ */
+
+.game-cursor-main,
+.game-cursor-trail,
+.game-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.game-cursor-main {
+  transition: opacity 0.15s ease;
+  filter: drop-shadow(0 0 4px rgba(74, 158, 255, 0.5));
+}
+
+.game-cursor-main svg {
+  display: block;
+}
+
+/* Click pulse effect */
+.game-cursor-click svg {
+  transform: scale(0.8);
+  transition: transform 0.08s ease;
+}
+
+.game-cursor-click svg rect {
+  fill: #e04060;
+}
+
+/* Trail glow dot */
+.game-cursor-trail {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74, 158, 255, 0.4) 0%, transparent 70%);
+  transition: opacity 0.2s ease;
+}
+
+/* Outer rotating ring */
+.game-cursor-ring {
+  transition: opacity 0.3s ease;
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3));
+}
+
+.game-cursor-ring svg {
+  display: block;
+}
+
+/* Hide native cursor when game cursor is active (desktop only) */
+@media (pointer: fine) {
+  html.game-cursor-active,
+  html.game-cursor-active *,
+  html.game-cursor-active a,
+  html.game-cursor-active button,
+  html.game-cursor-active input,
+  html.game-cursor-active [role="button"] {
+    cursor: none !important;
+  }
+}
+
+/* Never show game cursor on touch devices */
+@media (pointer: coarse) {
+  .game-cursor-main,
+  .game-cursor-trail,
+  .game-cursor-ring {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════ */
 /* ── MOBILE RESPONSIVE — PHONES & SMALL TABLETS ──── */
 /* ═══════════════════════════════════════════════════ */
 
