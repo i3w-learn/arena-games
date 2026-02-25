@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="pi_skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c090"/><stop offset="100%" stop-color="#c8956a"/></linearGradient>
+    <linearGradient id="pi_skinSh" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b87a50"/><stop offset="100%" stop-color="#8a5a38"/></linearGradient>
+    <linearGradient id="pi_gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#1a4a8a"/></linearGradient>
+    <linearGradient id="pi_giDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a6abf"/><stop offset="100%" stop-color="#0e2a55"/></linearGradient>
+    <linearGradient id="pi_pants" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8e8f0"/><stop offset="100%" stop-color="#8888a0"/></linearGradient>
+    <linearGradient id="pi_pantsDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#aaaabc"/><stop offset="100%" stop-color="#555568"/></linearGradient>
+    <linearGradient id="pi_belt" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#222"/><stop offset="100%" stop-color="#444"/></linearGradient>
+    <linearGradient id="pi_band" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#2266cc"/></linearGradient>
+    <linearGradient id="pi_hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient>
+    <radialGradient id="pi_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.5"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pi_energy"><stop offset="0%" stop-color="#4a9eff" stop-opacity="0.3"/><stop offset="100%" stop-color="#4a9eff" stop-opacity="0"/></radialGradient>
+    <filter id="pi_glow"><feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Ground shadow -->
+  <ellipse cx="60" cy="122" rx="24" ry="5" fill="url(#pi_shadow)"/>
+  <!-- Energy aura -->
+  <ellipse cx="60" cy="70" rx="30" ry="45" fill="url(#pi_energy)"/>
+  <!-- Back leg (left) -->
+  <path d="M48,88 L44,104 L42,112 L38,118 L48,118 L50,112 L52,104 L52,88Z" fill="url(#pi_pantsDk)" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>
+  <!-- Front leg (right, forward stance) -->
+  <path d="M60,86 L66,100 L70,108 L74,118 L84,116 L78,108 L72,98 L66,86Z" fill="url(#pi_pants)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+  <!-- Front foot -->
+  <path d="M74,116 L84,116 L86,120 L72,120Z" fill="#333" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+  <!-- Back foot -->
+  <path d="M38,116 L48,118 L50,120 L36,120Z" fill="#333" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+  <!-- Belt -->
+  <rect x="42" y="84" width="28" height="5" rx="1" fill="url(#pi_belt)"/>
+  <!-- Back arm (left, guard up near face) -->
+  <path d="M42,54 L34,48 L30,38 L26,34 L30,32 L36,40 L40,48 L44,52Z" fill="url(#pi_skinSh)" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+  <!-- Back fist -->
+  <ellipse cx="28" cy="33" rx="4" ry="3.5" fill="url(#pi_skinSh)"/>
+  <!-- Torso (3/4 right, athletic build) -->
+  <path d="M44,50 L40,58 L42,88 L70,86 L74,58 L70,48Z" fill="url(#pi_gi)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+  <!-- Gi dark side -->
+  <path d="M70,86 L74,58 L70,48" fill="url(#pi_giDk)" opacity="0.6"/>
+  <!-- Gi lapel / collar detail -->
+  <path d="M52,52 L58,50 L68,54 L66,68 L56,70 L52,56Z" fill="rgba(255,255,255,0.06)" stroke="rgba(100,180,255,0.2)" stroke-width="0.5"/>
+  <!-- Front arm (right, fist forward in guard) -->
+  <path d="M70,50 L80,48 L86,42 L90,38 L92,42 L88,48 L80,54 L72,54Z" fill="url(#pi_skin)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+  <!-- Front fist (wrapped) -->
+  <ellipse cx="91" cy="40" rx="4.5" ry="4" fill="url(#pi_skin)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+  <path d="M88,38 L94,38 L94,42 L88,42Z" fill="rgba(255,255,255,0.5)" opacity="0.3"/>
+  <!-- Back shoulder -->
+  <ellipse cx="44" cy="50" rx="5" ry="4" fill="url(#pi_giDk)" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+  <!-- Front shoulder -->
+  <ellipse cx="72" cy="50" rx="6" ry="4.5" fill="url(#pi_gi)" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+  <!-- Neck -->
+  <path d="M54,38 L64,38 L66,48 L52,48Z" fill="url(#pi_skin)" stroke="rgba(0,0,0,0.05)" stroke-width="0.3"/>
+  <!-- Head (3/4 right) -->
+  <path d="M44,18 Q42,6 58,4 Q72,4 74,14 L76,20 L76,32 Q74,38 60,38 Q46,38 44,32Z" fill="url(#pi_skin)" stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+  <!-- Face shadow (right side) -->
+  <path d="M70,14 L74,14 L76,20 L76,32 Q74,38 68,38 L68,14" fill="url(#pi_skinSh)" opacity="0.35"/>
+  <!-- Hair (spiky, facing right) -->
+  <path d="M44,18 Q42,4 56,2 Q66,2 74,10 L76,14 L74,8 L68,4 L58,2 L48,6 L44,14Z" fill="url(#pi_hair)"/>
+  <path d="M74,10 L80,6 L78,12" fill="url(#pi_hair)"/>
+  <path d="M70,6 L76,2 L74,10" fill="url(#pi_hair)"/>
+  <!-- Headband -->
+  <path d="M44,16 Q46,14 58,12 Q70,12 76,16 L76,20 Q70,16 58,16 Q46,18 44,20Z" fill="url(#pi_band)" filter="url(#pi_glow)"/>
+  <!-- Headband tail (flowing back) -->
+  <path d="M44,16 L36,18 L32,22 L34,20 L38,16 L44,16" fill="url(#pi_band)" opacity="0.7"/>
+  <path d="M44,18 L34,22 L28,28" fill="none" stroke="url(#pi_band)" stroke-width="2" opacity="0.5"/>
+  <!-- Eye (determined, facing right) -->
+  <ellipse cx="68" cy="24" rx="3" ry="2.5" fill="#fff"/>
+  <circle cx="70" cy="24" r="1.5" fill="#222"/>
+  <circle cx="70.5" cy="23.5" r="0.5" fill="#fff"/>
+  <!-- Eyebrow -->
+  <path d="M65,20 L73,19" fill="none" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Nose -->
+  <path d="M72,26 L74,28 L72,30" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.8"/>
+  <!-- Mouth (determined smirk) -->
+  <path d="M66,32 L72,32 L70,33" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="0.8" stroke-linecap="round"/>
+  <!-- Ear -->
+  <ellipse cx="46" cy="26" rx="2" ry="3" fill="url(#pi_skinSh)" opacity="0.6"/>
+</svg>

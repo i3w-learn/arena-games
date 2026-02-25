@@ -1,0 +1,1183 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #050508;
+}
+
+body {
+  font-family: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #e8e6e3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Retro noise / grain overlay ──────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  animation: retro-flicker 4s step-end infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes retro-flicker {
+  0% { opacity: 0.03; }
+  50% { opacity: 0.025; }
+  100% { opacity: 0.035; }
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ── Crisp canvas rendering ──────────────────────── */
+canvas {
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ── Starfield layers ─────────────────────────────── */
+.starfield {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.stars-layer {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  will-change: transform;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  will-change: opacity;
+}
+
+/* CSS-driven twinkle — replaces 155 individual GSAP tweens */
+.star-twinkle {
+  animation: star-twinkle-kf ease-in-out infinite alternate;
+}
+
+@keyframes star-twinkle-kf {
+  from { opacity: var(--tw-from, 0.3); }
+  to { opacity: 0.05; }
+}
+
+/* ── Floating planets layer ──────────────────────── */
+.planets-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.planet-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(75deg);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+/* ── Fullscreen game canvas ───────────────────────── */
+.game-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+/* CRT scanlines overlay on the game */
+.game-fullscreen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.06) 3px,
+    rgba(0, 0, 0, 0.06) 6px
+  );
+  pointer-events: none;
+  z-index: 999;
+  transform: translateZ(0);
+}
+
+/* CRT vignette on game */
+.game-fullscreen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
+  z-index: 999;
+  transform: translateZ(0);
+}
+
+/* ── Game title — Retro pixel font + effects ─────── */
+.game-title {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-family: 'Press Start 2P', 'Orbitron', monospace;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffd700;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.35 !important;
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+.game-title span {
+  color: #4a9eff;
+  -webkit-text-fill-color: initial;
+  text-shadow: 0 0 6px rgba(74, 158, 255, 0.3);
+}
+
+/* Minimal glitch for retro feel */
+.game-title::before,
+.game-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  -webkit-text-fill-color: initial;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.game-title::before {
+  animation: glitch-1 3s step-end infinite;
+  clip-path: inset(20% 0 60% 0);
+  color: #4a9eff;
+}
+
+.game-title::after {
+  animation: glitch-2 3s step-end infinite;
+  clip-path: inset(60% 0 10% 0);
+  color: #e04060;
+}
+
+@keyframes glitch-1 {
+  0%, 88%, 100% { opacity: 0; transform: translate(0); }
+  89% { opacity: 0.8; transform: translate(-2px, -1px); }
+  90% { opacity: 0; }
+  94% { opacity: 0.5; transform: translate(2px, 1px); }
+  95% { opacity: 0; }
+}
+
+@keyframes glitch-2 {
+  0%, 90%, 100% { opacity: 0; transform: translate(0); }
+  91% { opacity: 0.6; transform: translate(2px, 1px); }
+  92% { opacity: 0; }
+  96% { opacity: 0.4; transform: translate(-2px, -1px); }
+  97% { opacity: 0; }
+}
+
+/* ── Subtitle / footer overlay ────────────────────── */
+.game-subtitle {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.35rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: rgba(74, 158, 255, 0.2);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* ── Preloader ────────────────────────────────────── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #050508;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+
+.preloader-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.preloader-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.008) 2px,
+    rgba(255, 255, 255, 0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+.preloader-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 48px;
+}
+
+/* ── Star Wars style crawl title ─────────────────── */
+.preloader-crawl-wrapper {
+  text-align: center;
+  position: relative;
+  perspective: 400px;
+}
+
+.preloader-crawl-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse at center, rgba(255, 200, 50, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.preloader-title.preloader-starwars {
+  font-family: 'Press Start 2P', 'Orbitron', monospace;
+  font-size: 2.8rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  /* Star Wars gold/yellow gradient */
+  background: linear-gradient(
+    180deg,
+    #ffd700 0%,
+    #ffec80 20%,
+    #c9a53c 40%,
+    #ffe066 60%,
+    #c9a53c 80%,
+    #ffd700 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.15))
+          drop-shadow(0 0 80px rgba(255, 200, 50, 0.08));
+  transform: rotateX(8deg);
+  animation: title-pulse 3s ease-in-out infinite;
+}
+
+.preloader-title.preloader-starwars .preloader-title-accent {
+  font-weight: 900;
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+    180deg,
+    #fff8dc 0%,
+    #ffd700 30%,
+    #daa520 70%,
+    #b8860b 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@keyframes title-pulse {
+  0%, 100% { filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.15)) drop-shadow(0 0 80px rgba(255, 200, 50, 0.08)); }
+  50% { filter: drop-shadow(0 0 60px rgba(255, 215, 0, 0.25)) drop-shadow(0 0 100px rgba(255, 200, 50, 0.12)); }
+}
+
+.preloader-tagline {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.4rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: rgba(255, 215, 0, 0.4);
+  margin-top: 18px;
+  text-transform: uppercase;
+}
+
+.preloader-divider {
+  width: 120px;
+  height: 1px;
+  margin: 20px auto 0;
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 215, 0, 0.3) 20%,
+    rgba(255, 215, 0, 0.5) 50%,
+    rgba(255, 215, 0, 0.3) 80%,
+    transparent 100%
+  );
+}
+
+.preloader-divider-glow {
+  position: absolute;
+  inset: -3px 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 215, 0, 0.08) 30%,
+    rgba(255, 215, 0, 0.15) 50%,
+    rgba(255, 215, 0, 0.08) 70%,
+    transparent 100%
+  );
+  filter: blur(2px);
+}
+
+/* ── Word ticker ─────────────────────────────────── */
+.preloader-word-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+}
+
+.preloader-chevron-icon {
+  color: rgba(74, 158, 255, 0.4);
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  animation: chevron-blink 1.5s step-end infinite;
+}
+
+@keyframes chevron-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.preloader-word {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.preloader-cursor {
+  display: inline-block;
+  animation: blink 0.8s step-end infinite;
+  color: rgba(74, 158, 255, 0.6);
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ── Progress bar — attractive with glow ─────────── */
+.preloader-bar-wrapper {
+  position: relative;
+  width: 400px;
+}
+
+.preloader-bar-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 2px;
+  position: relative;
+  overflow: visible;
+  transform-origin: center;
+}
+
+.preloader-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4a9eff, #6ab4ff, #ffd700);
+  border-radius: 2px;
+  box-shadow:
+    0 0 8px rgba(74, 158, 255, 0.4),
+    0 0 20px rgba(74, 158, 255, 0.15);
+}
+
+.preloader-bar-glow {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 0%;
+  height: 11px;
+  background: linear-gradient(90deg, rgba(74, 158, 255, 0.2), rgba(106, 180, 255, 0.15), rgba(255, 215, 0, 0.12));
+  border-radius: 6px;
+  filter: blur(2px);
+}
+
+.preloader-bar-particles {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bar-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #4a9eff;
+  box-shadow: 0 0 4px rgba(74, 158, 255, 0.6);
+  pointer-events: none;
+}
+
+/* Mini ship riding the bar */
+.preloader-bar-ship {
+  position: absolute;
+  top: -6px;
+  left: 0%;
+  transform: translateX(-100%);
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(74, 158, 255, 0.5));
+  z-index: 2;
+}
+
+.preloader-bar-edges {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.preloader-bar-edge-l,
+.preloader-bar-edge-r {
+  display: block;
+  width: 6px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.preloader-pct {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: rgba(255, 215, 0, 0.4);
+}
+
+/* ── Flying spaceship ────────────────────────────── */
+.preloader-ship {
+  position: fixed;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.preloader-ship-svg {
+  width: 48px;
+  height: 24px;
+  display: block;
+}
+
+.preloader-ship-trail {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(74, 158, 255, 0.3), rgba(74, 158, 255, 0.6));
+  border-radius: 2px;
+  filter: blur(1px);
+  opacity: 0.6;
+}
+
+/* ── Story Slideshow ────────────────────────────── */
+.story-slideshow {
+  width: 480px;
+  max-width: 90vw;
+  position: relative;
+}
+
+.story-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.story-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: all 0.4s ease;
+}
+
+.story-dot-active {
+  background: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  width: 18px;
+}
+
+.story-cards-container {
+  position: relative;
+  height: 180px;
+  width: 100%;
+}
+
+.story-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+  background: rgba(10, 10, 30, 0.6);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  box-shadow:
+    0 0 30px rgba(74, 158, 255, 0.04),
+    inset 0 0 40px rgba(10, 10, 30, 0.5);
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  contain: layout style;
+}
+
+.story-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, #ffd700 0%, #4a9eff 50%, transparent 100%);
+  opacity: 0.4;
+}
+
+.story-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2));
+}
+
+.story-scene-svg {
+  flex-shrink: 0;
+  width: 160px;
+  height: 100px;
+  background: rgba(5, 5, 15, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.story-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.story-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.story-card-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.story-card-text {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: rgba(200, 200, 220, 0.7);
+  letter-spacing: 0.02em;
+}
+
+/* Corner accents on story card */
+.story-card .story-scene-svg::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(255, 215, 0, 0.3);
+  border-left: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.story-card .story-scene-svg::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid rgba(74, 158, 255, 0.3);
+  border-right: 2px solid rgba(74, 158, 255, 0.3);
+}
+
+/* ── Shooting stars ──────────────────────────────── */
+.preloader-shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: -8px 0 6px 1px rgba(255, 255, 255, 0.3), -16px 0 10px rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* ── START SCREEN — RETRO ARCADE THEME ─────────────  */
+/* ═══════════════════════════════════════════════════ */
+
+.start-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #0a0a18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.start-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* CRT scanlines — heavier for retro feel */
+.start-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* CRT vignette */
+.start-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+  pointer-events: none;
+  z-index: 39;
+}
+
+/* ── Center content ────────────────────────────────── */
+.start-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 48px;
+}
+
+/* ── Retro pixel Title ─────────────────────────────── */
+.start-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 3.5rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  text-align: center;
+  color: #ffd700;
+  text-shadow:
+    0 0 10px rgba(255, 215, 0, 0.6),
+    0 0 30px rgba(255, 215, 0, 0.3),
+    0 0 60px rgba(255, 215, 0, 0.15),
+    4px 4px 0 #8b6914;
+  user-select: none;
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  filter: none;
+}
+
+.start-title-accent {
+  color: #ff6040;
+  text-shadow:
+    0 0 10px rgba(255, 96, 64, 0.6),
+    0 0 30px rgba(255, 96, 64, 0.3),
+    0 0 60px rgba(255, 96, 64, 0.15),
+    4px 4px 0 #8b2a14;
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+/* ── Subtitle ──────────────────────────────────────── */
+.start-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: #4a9eff;
+  text-shadow: 0 0 8px rgba(74, 158, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* ── Pixel divider ─────────────────────────────────── */
+.start-divider {
+  width: 300px;
+  height: 4px;
+  position: relative;
+  background: repeating-linear-gradient(
+    90deg,
+    #4a9eff 0px,
+    #4a9eff 8px,
+    transparent 8px,
+    transparent 12px
+  );
+  margin: 4px 0;
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.3);
+}
+
+.start-divider-glow {
+  position: absolute;
+  inset: -6px 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(74, 158, 255, 0.1) 20%,
+    rgba(74, 158, 255, 0.2) 50%,
+    rgba(74, 158, 255, 0.1) 80%,
+    transparent 100%
+  );
+  filter: blur(4px);
+}
+
+/* ── Tagline ───────────────────────────────────────── */
+.start-tagline {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  text-align: center;
+  max-width: 600px;
+  line-height: 1.8;
+}
+
+/* ── RETRO START BUTTON ────────────────────────────── */
+.start-btn {
+  margin-top: 28px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: #000;
+  background: linear-gradient(180deg, #ffd700 0%, #ffaa00 50%, #cc8800 100%);
+  border: none;
+  border-radius: 0;
+  padding: 20px 48px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.15s ease;
+  box-shadow:
+    0 4px 0 #885500,
+    0 8px 0 #553300,
+    0 0 20px rgba(255, 215, 0, 0.3),
+    0 0 60px rgba(255, 215, 0, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-transform: uppercase;
+  /* Pixel-perfect edges */
+  image-rendering: pixelated;
+}
+
+.start-btn:hover {
+  background: linear-gradient(180deg, #ffe44d 0%, #ffcc33 50%, #ddaa22 100%);
+  border-color: transparent;
+  box-shadow:
+    0 4px 0 #aa7700,
+    0 8px 0 #664400,
+    0 0 40px rgba(255, 215, 0, 0.5),
+    0 0 80px rgba(255, 215, 0, 0.2),
+    inset 0 2px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  color: #000;
+}
+
+.start-btn:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 0 0 #885500,
+    0 2px 0 #553300,
+    0 0 20px rgba(255, 215, 0, 0.3),
+    inset 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.start-btn-icon {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  color: #553300;
+}
+
+/* Pixel shimmer sweep */
+.start-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.start-btn:hover::after {
+  left: 120%;
+}
+
+/* ── Pixel coin decorators on button ──────────────── */
+.start-btn::before {
+  content: '♦';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.6rem;
+  color: #885500;
+  animation: retro-coin-spin 1s step-start infinite;
+}
+
+@keyframes retro-coin-spin {
+  0%, 25% { content: '♦'; }
+  25.1%, 50% { content: '◆'; }
+  50.1%, 75% { content: '●'; }
+  75.1%, 100% { content: '♦'; }
+}
+
+/* ── Hint text ─────────────────────────────────────── */
+.start-hint {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.4rem;
+  letter-spacing: 0.2em;
+  color: rgba(74, 158, 255, 0.5);
+  animation: retro-blink 1s step-end infinite;
+}
+
+@keyframes retro-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ── INSERT COIN text ─────────────────────────────── */
+.start-insert-coin {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: #4eca78;
+  text-shadow: 0 0 8px rgba(78, 202, 120, 0.5);
+  animation: retro-blink 1s step-end infinite;
+  margin-top: 8px;
+}
+
+/* ── Space stickers — absolute on screen ──────────── */
+.start-stickers-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.space-sticker {
+  position: absolute;
+  will-change: transform;
+  transform: translateZ(0);
+  filter: drop-shadow(0 0 12px rgba(74, 158, 255, 0.2));
+}
+
+/* Ringed planet — left of center */
+.sticker-planet-left {
+  left: 2%;
+  top: 38%;
+}
+
+/* Spaceship — right of center */
+.sticker-ship-right {
+  right: 2%;
+  top: 42%;
+}
+
+/* Meteoroid — upper left */
+.sticker-meteor-tl {
+  left: 12%;
+  top: 10%;
+}
+
+/* Red planet — upper right */
+.sticker-planet-tr {
+  right: 10%;
+  top: 8%;
+}
+
+/* Trailing meteoroid — lower left */
+.sticker-meteor-bl {
+  left: 6%;
+  bottom: 14%;
+}
+
+/* Green planet — lower right */
+.sticker-planet-br {
+  right: 8%;
+  bottom: 12%;
+}
+
+/* ── Character silhouettes — pixel styled ──────────── */
+.start-character {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.start-char-left {
+  left: 8%;
+  bottom: 10%;
+}
+
+.start-char-right {
+  right: 8%;
+  bottom: 10%;
+}
+
+.start-char-svg {
+  width: 140px;
+  height: auto;
+  opacity: 0.8;
+  image-rendering: pixelated;
+  /* CSS glow replaces expensive SVG feGaussianBlur filter */
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.start-char-glow {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 80px;
+  border-radius: 50%;
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.start-char-glow-blue {
+  background: radial-gradient(ellipse, rgba(74, 158, 255, 0.25) 0%, transparent 70%);
+}
+
+.start-char-glow-red {
+  background: radial-gradient(ellipse, rgba(224, 64, 96, 0.25) 0%, transparent 70%);
+}
+
+.start-char-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.start-char-label-blue {
+  color: #4a9eff;
+  text-shadow: 0 0 8px rgba(74, 158, 255, 0.5);
+}
+
+.start-char-label-red {
+  color: #e04060;
+  text-shadow: 0 0 8px rgba(224, 64, 96, 0.5);
+}
+
+/* ── Energy orbs — pixel rings ─────────────────────── */
+.start-orb {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.start-orb-left {
+  left: 15%;
+  top: 20%;
+}
+
+.start-orb-right {
+  right: 15%;
+  top: 15%;
+}
+
+.start-orb-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 0;
+  border: 2px dashed rgba(74, 158, 255, 0.12);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.start-orb-ring-2 {
+  width: 80px;
+  height: 80px;
+  border-color: rgba(224, 64, 96, 0.1);
+}
+
+/* ── Floating particles — square pixels ──────────── */
+.start-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.start-particle {
+  position: absolute;
+  border-radius: 0;
+  pointer-events: none;
+}
+
+/* ── Retro grid floor ─────────────────────────────── */
+.start-retro-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background:
+    linear-gradient(rgba(74, 158, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 158, 255, 0.06) 1px, transparent 1px);
+  background-size: 60px 40px;
+  transform: perspective(300px) rotateX(60deg);
+  transform-origin: bottom;
+  pointer-events: none;
+  z-index: 1;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, transparent 100%);
+}
+
+/* ── High score display ───────────────────────────── */
+.start-highscore {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  color: #ffd700;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+  letter-spacing: 0.15em;
+  margin-top: 4px;
+}
+
+/* ── Credits text ─────────────────────────────────── */
+.start-credits {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.35rem;
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: 0.15em;
+  z-index: 10;
+}

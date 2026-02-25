@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="oi_skin" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4a878"/><stop offset="100%" stop-color="#a07850"/></linearGradient>
+    <linearGradient id="oi_skinSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8a6040"/><stop offset="100%" stop-color="#604028"/></linearGradient>
+    <linearGradient id="oi_vest" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e04060"/><stop offset="100%" stop-color="#6a1828"/></linearGradient>
+    <linearGradient id="oi_vestDk" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#aa2840"/><stop offset="100%" stop-color="#3a0e18"/></linearGradient>
+    <linearGradient id="oi_pants" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a30"/><stop offset="100%" stop-color="#111115"/></linearGradient>
+    <linearGradient id="oi_pantsDk" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a20"/><stop offset="100%" stop-color="#08080a"/></linearGradient>
+    <linearGradient id="oi_wrap" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#e04060"/><stop offset="100%" stop-color="#882030"/></linearGradient>
+    <linearGradient id="oi_hair" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#cc2020"/><stop offset="100%" stop-color="#661010"/></linearGradient>
+    <radialGradient id="oi_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.55"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="oi_energy"><stop offset="0%" stop-color="#e04060" stop-opacity="0.25"/><stop offset="100%" stop-color="#e04060" stop-opacity="0"/></radialGradient>
+    <filter id="oi_glow"><feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="68" cy="122" rx="26" ry="6" fill="url(#oi_shadow)"/>
+  <!-- Energy aura -->
+  <ellipse cx="68" cy="68" rx="32" ry="46" fill="url(#oi_energy)"/>
+  <!-- Back leg (right) -->
+  <path d="M80,88 L84,104 L86,112 L90,118 L80,118 L78,112 L76,104 L76,88Z" fill="url(#oi_pantsDk)" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>
+  <path d="M80,116 L90,118 L92,120 L78,120Z" fill="#222"/>
+  <!-- Front leg (left, forward) -->
+  <path d="M62,86 L54,100 L50,108 L46,118 L36,116 L42,108 L50,98 L56,86Z" fill="url(#oi_pants)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+  <path d="M36,116 L46,118 L44,120 L34,120Z" fill="#222"/>
+  <!-- Belt / waistband -->
+  <rect x="50" y="84" width="30" height="5" rx="1" fill="#333"/>
+  <rect x="62" y="83" width="6" height="7" rx="1" fill="#888" opacity="0.6"/>
+  <!-- Back arm (right, behind) -->
+  <path d="M84,54 L92,48 L96,38 L100,34 L96,32 L90,40 L86,48 L82,52Z" fill="url(#oi_skinSh)" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+  <ellipse cx="98" cy="33" rx="4" ry="3.5" fill="url(#oi_skinSh)"/>
+  <!-- Torso (3/4 left, broader/heavier build) -->
+  <path d="M82,48 L86,56 L84,88 L56,86 L50,58 L54,48Z" fill="url(#oi_vest)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+  <!-- Vest dark side -->
+  <path d="M56,86 L50,58 L54,48" fill="url(#oi_vestDk)" opacity="0.6"/>
+  <!-- Vest detail / muscle lines -->
+  <path d="M72,52 L66,50 L56,54 L58,68 L68,70 L72,56Z" fill="rgba(0,0,0,0.08)" stroke="rgba(255,60,60,0.12)" stroke-width="0.5"/>
+  <!-- Chest scar -->
+  <path d="M64,56 L70,64" fill="none" stroke="rgba(255,200,200,0.3)" stroke-width="1"/>
+  <!-- Front arm (left, guard up, wrapped fists) -->
+  <path d="M54,50 L42,48 L36,42 L32,38 L30,42 L34,48 L42,54 L52,54Z" fill="url(#oi_skin)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+  <!-- Front fist (wrapped) -->
+  <ellipse cx="31" cy="40" rx="5" ry="4.5" fill="url(#oi_skin)" stroke="rgba(255,100,100,0.2)" stroke-width="0.8"/>
+  <path d="M28,38 L34,38 L34,42 L28,42Z" fill="url(#oi_wrap)" opacity="0.5"/>
+  <!-- Shoulders -->
+  <ellipse cx="82" cy="50" rx="5.5" ry="4" fill="url(#oi_vestDk)"/>
+  <ellipse cx="54" cy="50" rx="6.5" ry="5" fill="url(#oi_vest)"/>
+  <!-- Neck (thick) -->
+  <path d="M72,36 L62,36 L60,48 L74,48Z" fill="url(#oi_skin)"/>
+  <!-- Head (3/4 left, angular/tough) -->
+  <path d="M82,18 Q84,6 68,2 Q54,2 52,12 L50,18 L50,32 Q52,38 66,38 Q80,38 82,32Z" fill="url(#oi_skin)" stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+  <!-- Face shadow -->
+  <path d="M56,12 L52,12 L50,18 L50,32 Q52,38 58,38 L58,12" fill="url(#oi_skinSh)" opacity="0.35"/>
+  <!-- Hair (mohawk/spiky, red-tinted) -->
+  <path d="M82,18 Q84,4 70,0 Q62,0 52,8 L50,12 L52,6 L60,2 L70,0 L78,4 L82,12Z" fill="url(#oi_hair)"/>
+  <path d="M68,0 L66,-6 L72,2" fill="url(#oi_hair)"/>
+  <path d="M62,2 L58,-4 L64,2" fill="url(#oi_hair)"/>
+  <path d="M74,2 L74,-4 L78,6" fill="url(#oi_hair)"/>
+  <!-- Scar across eye -->
+  <path d="M60,18 L54,28" fill="none" stroke="rgba(255,180,180,0.4)" stroke-width="1.2"/>
+  <!-- Eye (menacing, facing left) -->
+  <ellipse cx="56" cy="24" rx="3" ry="2.5" fill="#fff"/>
+  <circle cx="54" cy="24" r="1.8" fill="#881111"/>
+  <circle cx="53.5" cy="23.5" r="0.5" fill="#ff4444"/>
+  <!-- Eyebrow (angry) -->
+  <path d="M60,20 L52,18" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Nose -->
+  <path d="M54,26 L52,28 L54,30" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.8"/>
+  <!-- Mouth (sneer) -->
+  <path d="M60,32 L54,33 L52,32" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1" stroke-linecap="round"/>
+  <!-- Ear -->
+  <ellipse cx="80" cy="26" rx="2" ry="3" fill="url(#oi_skinSh)" opacity="0.6"/>
+</svg>

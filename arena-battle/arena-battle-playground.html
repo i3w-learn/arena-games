@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena Battle — Architecture Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0d1b2a;
+    --surface: #1d3557;
+    --surface2: #243b5e;
+    --primary: #E63946;
+    --light: #F1FAEE;
+    --accent: #457B9D;
+    --health: #A8DADC;
+    --muted: #8899aa;
+    --green: #2a9d4e;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--light); min-height: 100vh; }
+  header { padding: 20px 32px; border-bottom: 1px solid var(--surface2); display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 20px; font-weight: 600; }
+  header h1 span { color: var(--primary); }
+  .badge { font-size: 11px; background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .layout { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 61px); }
+  .sidebar { background: var(--surface); border-right: 1px solid var(--surface2); padding: 20px; overflow-y: auto; }
+  .sidebar h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab { padding: 6px 12px; font-size: 12px; font-family: var(--font); border: 1px solid var(--surface2); border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; }
+  .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .tab:hover:not(.active) { border-color: var(--accent); color: var(--light); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .tree { list-style: none; font-size: 13px; }
+  .tree li { padding: 6px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .tree li:hover { background: var(--surface2); }
+  .tree li.selected { background: var(--accent); color: white; }
+  .tree .folder { color: var(--accent); font-weight: 600; margin-top: 12px; cursor: default; }
+  .tree .folder:hover { background: transparent; }
+  .tree .status { margin-left: auto; font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+  .status.done { background: #1a4d2e; color: #4ade80; }
+  .status.stub { background: #4d2e1a; color: #fbbf24; }
+  .state-machine { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+  .state-node { padding: 10px 14px; border-radius: 8px; border: 2px solid var(--surface2); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .state-node:hover { border-color: var(--accent); }
+  .state-node.active-state { border-color: var(--primary); background: rgba(230,57,70,0.15); }
+  .state-desc { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .event-list { list-style: none; font-size: 12px; }
+  .event-list li { padding: 8px 10px; border-left: 3px solid var(--surface2); margin-bottom: 4px; cursor: pointer; border-radius: 0 4px 4px 0; }
+  .event-list li:hover { background: var(--surface2); border-color: var(--accent); }
+  .event-name { font-family: var(--mono); font-weight: 600; color: var(--health); }
+  .event-flow { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .main { padding: 24px 32px; overflow-y: auto; }
+  .main h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .file-badge { font-size: 12px; font-family: var(--mono); color: var(--accent); font-weight: 400; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .card { background: var(--surface); border-radius: 10px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--surface2); }
+  .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--health); }
+  .card p { font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .code-block { background: var(--bg); border-radius: 6px; padding: 14px; font-family: var(--mono); font-size: 12px; line-height: 1.7; overflow-x: auto; white-space: pre; color: var(--light); border: 1px solid var(--surface2); }
+  .battle-sim { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; margin-bottom: 24px; }
+  .char-card { text-align: center; padding: 20px; background: var(--surface); border-radius: 12px; border: 2px solid var(--surface2); }
+  .char-card.player { border-color: var(--accent); }
+  .char-card.opponent { border-color: var(--primary); }
+  .char-icon { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+  .char-card.player .char-icon { background: rgba(69,123,157,0.3); }
+  .char-card.opponent .char-icon { background: rgba(230,57,70,0.3); }
+  .char-name { font-weight: 600; font-size: 16px; margin-bottom: 8px; }
+  .hp-bar { width: 100%; height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+  .hp-fill { height: 100%; border-radius: 6px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+  .char-card.player .hp-fill { background: var(--health); }
+  .char-card.opponent .hp-fill { background: var(--primary); }
+  .hp-text { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .vs-text { font-size: 28px; font-weight: 800; color: var(--primary); }
+  .question-box { background: var(--surface); border-radius: 10px; padding: 20px; border: 1px solid var(--surface2); margin-bottom: 16px; }
+  .q-text { font-size: 15px; font-weight: 600; margin-bottom: 16px; line-height: 1.5; }
+  .answer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .answer-btn { padding: 10px 14px; border: 2px solid var(--surface2); border-radius: 8px; background: transparent; color: var(--light); font-family: var(--font); font-size: 13px; cursor: pointer; text-align: left; }
+  .answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(69,123,157,0.1); }
+  .answer-btn.correct { border-color: var(--green); background: rgba(42,157,78,0.2); }
+  .answer-btn.wrong { border-color: var(--primary); background: rgba(230,57,70,0.2); }
+  .answer-btn.highlight { border-color: var(--green); }
+  .answer-btn:disabled { cursor: default; opacity: 0.7; }
+  .explanation-box { background: rgba(168,218,220,0.1); border-left: 3px solid var(--health); padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 12px; font-size: 13px; color: var(--health); display: none; }
+  .sim-controls { display: flex; gap: 8px; margin-top: 16px; }
+  .sim-btn { padding: 8px 20px; border: none; border-radius: 6px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .sim-btn.primary { background: var(--accent); color: white; }
+  .sim-btn.primary:hover { background: #5a8fb0; }
+  .sim-btn.danger { background: var(--primary); color: white; }
+  .sim-btn.danger:hover { background: #ff5a68; }
+  .sim-log { background: var(--bg); border: 1px solid var(--surface2); border-radius: 8px; padding: 12px; max-height: 150px; overflow-y: auto; font-family: var(--mono); font-size: 11px; line-height: 1.8; margin-top: 12px; }
+  .log-entry { color: var(--muted); }
+  .log-entry.correct-log { color: var(--green); }
+  .log-entry.wrong-log { color: var(--primary); }
+  .log-entry.system-log { color: var(--accent); }
+  .log-entry.victory-log { color: #fbbf24; font-weight: 600; }
+  .result-banner { text-align: center; padding: 20px; border-radius: 10px; font-size: 24px; font-weight: 800; margin-bottom: 16px; display: none; }
+  .result-banner.victory { display: block; background: rgba(42,157,78,0.2); border: 2px solid var(--green); color: var(--green); }
+  .result-banner.defeat { display: block; background: rgba(230,57,70,0.2); border: 2px solid var(--primary); color: var(--primary); }
+  .pipeline { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+  .pipeline-node { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; border: 1px solid var(--surface2); }
+  .pipeline-node.data { background: rgba(69,123,157,0.2); border-color: var(--accent); color: var(--accent); }
+  .pipeline-node.code { background: rgba(230,57,70,0.2); border-color: var(--primary); color: var(--primary); }
+  .pipeline-node.output { background: rgba(168,218,220,0.2); border-color: var(--health); color: var(--health); }
+  .pipeline-arrow { color: var(--muted); font-size: 18px; }
+  .prompt-output { background: var(--surface); border-top: 1px solid var(--surface2); padding: 16px 32px; position: sticky; bottom: 0; }
+  .prompt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prompt-header h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .copy-btn { padding: 4px 12px; border: 1px solid var(--accent); border-radius: 4px; background: transparent; color: var(--accent); font-family: var(--font); font-size: 11px; cursor: pointer; }
+  .copy-btn:hover { background: var(--accent); color: white; }
+  .prompt-text { font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--light); white-space: pre-wrap; max-height: 80px; overflow-y: auto; }
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+  .arch-box { padding: 12px; background: var(--bg); border-radius: 8px; }
+  .arch-box.left { border-left: 3px solid var(--accent); }
+  .arch-box.right { border-left: 3px solid var(--primary); }
+  .arch-label { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .arch-desc { font-size: 11px; color: var(--muted); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { max-height: 300px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>Arena Battle</span> Architecture Playground</h1>
+  <span class="badge">Proof-of-Pipeline Sliver</span>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="tabs" id="tabsContainer"></div>
+    <div id="tab-files" class="panel active">
+      <h2>Project Structure</h2>
+      <ul class="tree" id="fileTree"></ul>
+    </div>
+    <div id="tab-states" class="panel">
+      <h2>Battle State Machine</h2>
+      <div class="state-machine" id="stateMachine"></div>
+    </div>
+    <div id="tab-events" class="panel">
+      <h2>Event Bus Flow</h2>
+      <ul class="event-list" id="eventList"></ul>
+    </div>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;overflow:hidden;">
+    <main class="main" id="mainContent"></main>
+    <div class="prompt-output">
+      <div class="prompt-header">
+        <h3>Prompt Output</h3>
+        <button class="copy-btn" id="copyBtn">Copy</button>
+      </div>
+      <div class="prompt-text" id="promptText">Select a file, state, or event to explore the architecture.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────
+const FILES = [
+  { folder: true, label: 'State (Pure Data)' },
+  { name: 'BattleState.ts', path: 'src/state/BattleState.ts', status: 'done', desc: 'Pure data management. Creates initial state, tracks HP, records answers.', api: 'createInitialState(questions)\ngetCurrentQuestion(state)\nrecordAnswer(state, answer)\napplyDamage(character, damage)\nsetPhase(state, phase)', rule: 'NEVER imports Phaser. Pure functions on plain data.' },
+  { name: 'QuestionBank.ts', path: 'src/state/QuestionBank.ts', status: 'done', desc: '10 JEE Physics Thermodynamics MCQs. Returns random subset of 5.', api: 'getQuestions(count) returns MCQ[]', rule: 'Questions are data. No game logic.' },
+  { folder: true, label: 'Systems (Logic)' },
+  { name: 'BattleSystem.ts', path: 'src/systems/BattleSystem.ts', status: 'done', desc: 'State machine. Manages battle flow, damage, end conditions. Emits events.', api: 'startBattle()\nshowNextQuestion()\nsubmitAnswer(selectedIndex)\ngetState()\nrestart()', rule: 'End conditions: opponent HP <= 0 then player HP <= 0 then compare HP.' },
+  { folder: true, label: 'Events (Pub/Sub)' },
+  { name: 'EventBus.ts', path: 'src/events/EventBus.ts', status: 'done', desc: 'Simple typed event emitter. Sole bridge between state and rendering.', api: 'eventBus.on(event, cb)\neventBus.off(event, cb)\neventBus.emit(event, ...args)', rule: 'Zero Phaser dependency. Shared singleton.' },
+  { name: 'GameEvents.ts', path: 'src/events/GameEvents.ts', status: 'done', desc: 'Enum of all 10 game event types.', api: 'BATTLE_START, QUESTION_SHOW, ANSWER_CORRECT,\nANSWER_WRONG, ATTACK_PLAYER, ATTACK_OPPONENT,\nHP_CHANGED, SHOW_EXPLANATION, VICTORY, DEFEAT', rule: 'Every event has a strict payload shape.' },
+  { folder: true, label: 'Rendering (Phaser)' },
+  { name: 'BootScene.ts', path: 'src/rendering/BootScene.ts', status: 'done', desc: 'Loads all SVGs and JSON data. Transitions to BattleScene.', api: 'preload() loads 10 SVGs + 2 JSON\ncreate() starts BattleScene', rule: 'Asset paths relative to public/ root.' },
+  { name: 'BattleScene.ts', path: 'src/rendering/BattleScene.ts', status: 'stub', desc: 'STUB: Needs characters, health bars, question panel, answer buttons, event wiring.', api: 'TODO: Full UI + event subscriptions', rule: 'Only calls submitAnswer(). Never writes state directly.' },
+  { name: 'AnimationRunner.ts', path: 'src/rendering/AnimationRunner.ts', status: 'stub', desc: 'STUB: Translates animation-spec.json into Phaser tweens.', api: 'TODO: runAnimation(scene, target, key)', rule: 'ALL values from JSON. Zero hardcoded tweens.' },
+  { name: 'SoundManager.ts', path: 'src/rendering/SoundManager.ts', status: 'stub', desc: 'STUB: Wraps jsfxr. Needs EventBus subscriptions.', api: 'TODO: play(soundKey)\nTODO: subscribe()', rule: 'ALL params from JSON. Zero hardcoded jsfxr.' },
+  { name: 'VictoryScene.ts', path: 'src/rendering/VictoryScene.ts', status: 'stub', desc: 'STUB: Score display and Play Again button.', api: 'TODO: create(data)', rule: 'Receives score via scene data.' },
+  { name: 'DefeatScene.ts', path: 'src/rendering/DefeatScene.ts', status: 'stub', desc: 'STUB: Missed questions + explanations, Try Again button.', api: 'TODO: create(data)', rule: 'Shows explanations for learning.' },
+  { folder: true, label: 'Assets (Data Files)' },
+  { name: 'sound-params.json', path: 'public/assets/sounds/', status: 'done', desc: '7 jsfxr parameter arrays. Change values = change sounds. Zero code changes.', api: 'correct, wrong, attackHit, victory,\ndefeat, buttonTap, battleStart', rule: 'Human tunes at sfxr.me, pastes arrays.' },
+  { name: 'animation-spec.json', path: 'public/assets/animations/', status: 'done', desc: '5 animation definitions with timing and easing.', api: 'playerAttack, opponentAttack, takeHit,\nquestionSlideIn, healthBarDecrease', rule: 'Change duration or ease = change animation.' },
+  { name: 'SVG Characters', path: 'public/assets/characters/', status: 'done', desc: '7 SVGs: player (idle, attack, hit, victory), opponent (idle, attack, hit).', api: 'Flat geometric, palette-locked', rule: 'Change hex in SVG = different character color.' },
+];
+
+const STATES = [
+  { name: 'BATTLE_INTRO', desc: 'Show characters, HP at 100%. battleStart sound. Auto-transition 1500ms.' },
+  { name: 'QUESTION_DISPLAY', desc: 'Show question + 4 buttons. Wait for tap.' },
+  { name: 'ANSWER_RESOLVE', desc: 'Correct: player attacks, opp HP-=20. Wrong: opp attacks, player HP-=20, explanation 1500ms.' },
+  { name: 'VICTORY', desc: 'Score display, Play Again button, victory sound.' },
+  { name: 'DEFEAT', desc: 'Missed questions with explanations, Try Again button, defeat sound.' },
+];
+
+const EVENTS = [
+  { name: 'BATTLE_START', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: 'none', flow: 'startBattle() emits, BattleScene shows intro, SoundManager plays battleStart' },
+  { name: 'QUESTION_SHOW', emitter: 'BattleSystem', listeners: 'BattleScene', payload: '{ question, questionIndex }', flow: 'showNextQuestion() emits, BattleScene updates text and buttons' },
+  { name: 'ANSWER_CORRECT', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: '{ questionId, selectedIndex }', flow: 'submitAnswer() emits, button flashes green, correct sound plays' },
+  { name: 'ANSWER_WRONG', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: '{ questionId, selectedIndex, correctIndex }', flow: 'submitAnswer() emits, button flashes red, correct highlighted, wrong sound plays' },
+  { name: 'ATTACK_PLAYER', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: 'none', flow: 'After correct, player attack tween runs, attackHit sound plays' },
+  { name: 'ATTACK_OPPONENT', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: 'none', flow: 'After wrong, opponent attack tween runs, attackHit sound plays' },
+  { name: 'HP_CHANGED', emitter: 'BattleSystem', listeners: 'BattleScene', payload: '{ character, newHp, maxHp }', flow: 'After damage, health bar tweens to new width, HP text updates' },
+  { name: 'SHOW_EXPLANATION', emitter: 'BattleSystem', listeners: 'BattleScene', payload: '{ explanation, correctIndex }', flow: 'After wrong answer, explanation shows for 1500ms' },
+  { name: 'VICTORY', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: '{ score, totalQuestions, missed }', flow: 'endBattle("VICTORY"), transitions to VictoryScene, victory sound' },
+  { name: 'DEFEAT', emitter: 'BattleSystem', listeners: 'BattleScene, SoundManager', payload: '{ score, totalQuestions, missed }', flow: 'endBattle("DEFEAT"), transitions to DefeatScene, defeat sound' },
+];
+
+const QUESTIONS = [
+  { q: "In an isothermal expansion of an ideal gas, which is true?", opts: ["Internal energy increases", "Heat removed from system", "Work done = heat absorbed", "Pressure remains constant"], correct: 2, explanation: "Temperature constant, dU=0. By First Law: dQ = dW." },
+  { q: "Carnot engine between 500K and 300K — max efficiency?", opts: ["20%", "40%", "60%", "80%"], correct: 1, explanation: "Efficiency = 1 - (Tc/Th) = 1 - 300/500 = 40%." },
+  { q: "Adiabatic: P proportional to T cubed. Cp/Cv ratio?", opts: ["1.5", "1.67", "1.33", "1.4"], correct: 0, explanation: "gamma/(gamma-1) = 3, so gamma = 1.5." },
+  { q: "Which law establishes the concept of temperature?", opts: ["Zeroth Law", "First Law", "Second Law", "Third Law"], correct: 0, explanation: "Zeroth Law: thermal equilibrium defines temperature." },
+  { q: "For a cyclic process, change in internal energy is:", opts: ["Equal to heat absorbed", "Zero", "Equal to work done", "Always positive"], correct: 1, explanation: "Internal energy is a state function. Returns to initial state, dU = 0." },
+];
+
+const TRANSITIONS = {
+  'BATTLE_INTRO': 'After 1500ms auto-delay -> QUESTION_DISPLAY',
+  'QUESTION_DISPLAY': 'Player taps answer -> ANSWER_RESOLVE',
+  'ANSWER_RESOLVE': 'Opp HP<=0 -> VICTORY | Player HP<=0 -> DEFEAT | All done -> compare HP | Else -> QUESTION_DISPLAY',
+  'VICTORY': 'Play Again -> BATTLE_INTRO (full reset)',
+  'DEFEAT': 'Try Again -> BATTLE_INTRO (full reset)',
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────
+let simState = null;
+function resetSim() {
+  const shuffled = QUESTIONS.slice().sort(function() { return Math.random() - 0.5; });
+  simState = { playerHp: 100, opponentHp: 100, score: 0, questionIndex: 0, questions: shuffled, phase: 'BATTLE_INTRO', log: [], answered: false, gameOver: false };
+}
+resetSim();
+
+// ─── SAFE DOM HELPERS ──────────────────────────────────────────────
+function clearEl(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+
+function createEl(tag, attrs, children) {
+  var el = document.createElement(tag);
+  if (attrs) {
+    Object.keys(attrs).forEach(function(k) {
+      if (k === 'textContent') el.textContent = attrs[k];
+      else if (k === 'className') el.className = attrs[k];
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else if (k === 'style' && typeof attrs[k] === 'object') Object.assign(el.style, attrs[k]);
+      else if (k === 'style') el.setAttribute('style', attrs[k]);
+      else el.setAttribute(k, attrs[k]);
+    });
+  }
+  if (children) {
+    (Array.isArray(children) ? children : [children]).forEach(function(c) {
+      if (typeof c === 'string') el.appendChild(document.createTextNode(c));
+      else if (c) el.appendChild(c);
+    });
+  }
+  return el;
+}
+
+// ─── RENDER FUNCTIONS ──────────────────────────────────────────────
+function renderTabs() {
+  var container = document.getElementById('tabsContainer');
+  clearEl(container);
+  ['files', 'states', 'events'].forEach(function(tab) {
+    var label = tab === 'files' ? 'Files' : tab === 'states' ? 'State Machine' : 'Events';
+    var btn = createEl('button', { className: 'tab' + (tab === 'files' ? ' active' : ''), textContent: label, onClick: function() { switchTab(tab); } });
+    container.appendChild(btn);
+  });
+}
+
+function renderFileTree() {
+  var tree = document.getElementById('fileTree');
+  clearEl(tree);
+  FILES.forEach(function(f) {
+    if (f.folder) {
+      var li = createEl('li', { className: 'folder' }, [createEl('span', { className: 'icon', textContent: '\uD83D\uDCC1' }), document.createTextNode(f.label)]);
+      tree.appendChild(li);
+    } else {
+      var statusLabel = f.status === 'done' ? 'DONE' : 'STUB';
+      var li = createEl('li', { id: 'file-' + f.name, onClick: function() { showFile(f.name); } }, [
+        createEl('span', { className: 'icon', textContent: '\uD83D\uDCC4' }),
+        document.createTextNode(f.name),
+        createEl('span', { className: 'status ' + f.status, textContent: statusLabel })
+      ]);
+      tree.appendChild(li);
+    }
+  });
+}
+
+function renderStateMachine() {
+  var sm = document.getElementById('stateMachine');
+  clearEl(sm);
+  STATES.forEach(function(s, i) {
+    var node = createEl('div', { className: 'state-node' + (simState.phase === s.name ? ' active-state' : ''), onClick: function() { showState(s.name); } }, [
+      createEl('div', { textContent: s.name, style: 'font-weight:700' }),
+      createEl('div', { className: 'state-desc', textContent: s.desc })
+    ]);
+    sm.appendChild(node);
+    if (i < 2) {
+      sm.appendChild(createEl('div', { textContent: '\u2193', style: 'text-align:center;color:var(--muted);font-size:18px' }));
+    }
+  });
+}
+
+function renderEventList() {
+  var el = document.getElementById('eventList');
+  clearEl(el);
+  EVENTS.forEach(function(e) {
+    var li = createEl('li', { onClick: function() { showEvent(e.name); } }, [
+      createEl('div', { className: 'event-name', textContent: e.name }),
+      createEl('div', { className: 'event-flow', textContent: e.emitter + ' -> ' + e.listeners })
+    ]);
+    el.appendChild(li);
+  });
+}
+
+// ─── VIEWS ─────────────────────────────────────────────────────────
+function showOverview() {
+  var main = document.getElementById('mainContent');
+  clearEl(main);
+  var doneCount = FILES.filter(function(f) { return f.status === 'done'; }).length;
+  var stubCount = FILES.filter(function(f) { return f.status === 'stub'; }).length;
+  var pct = Math.round(doneCount / (doneCount + stubCount) * 100);
+
+  main.appendChild(createEl('h2', { textContent: 'Arena Battle \u2014 Proof-of-Pipeline Sliver' }));
+  main.appendChild(createEl('p', { className: 'subtitle', textContent: 'A JEE Physics quiz disguised as combat. Correct = attack opponent. Wrong = take damage. 5 questions, 100 HP, 20 damage/hit.' }));
+
+  // Status card
+  var statusCard = createEl('div', { className: 'card' });
+  statusCard.appendChild(createEl('h3', { textContent: 'Project Status' }));
+  var statsRow = createEl('div', { style: 'display:flex;gap:24px;margin-bottom:12px' });
+  statsRow.appendChild(createEl('div', {}, [createEl('span', { style: 'font-size:28px;font-weight:800;color:var(--green)', textContent: String(doneCount) }), document.createTextNode(' done')]));
+  statsRow.appendChild(createEl('div', {}, [createEl('span', { style: 'font-size:28px;font-weight:800;color:#fbbf24', textContent: String(stubCount) }), document.createTextNode(' stubs')]));
+  statsRow.appendChild(createEl('div', {}, [createEl('span', { style: 'font-size:28px;font-weight:800;color:var(--accent)', textContent: pct + '%' }), document.createTextNode(' complete')]));
+  statusCard.appendChild(statsRow);
+  statusCard.appendChild(createEl('p', { textContent: 'Architecture, state, events, and assets are complete. Remaining: wiring up the Phaser rendering layer (5 stub files).' }));
+  main.appendChild(statusCard);
+
+  // Pipeline card
+  var pipeCard = createEl('div', { className: 'card' });
+  pipeCard.appendChild(createEl('h3', { textContent: 'Data-First Art Pipeline' }));
+  [['SVG Files', 'Phaser load.svg()', 'Game Characters'], ['sound-params.json', 'jsfxr(params)', 'Audio Playback'], ['animation-spec.json', 'Phaser Tweens', 'Attack Animations']].forEach(function(row) {
+    var p = createEl('div', { className: 'pipeline' });
+    p.appendChild(createEl('div', { className: 'pipeline-node data', textContent: row[0] }));
+    p.appendChild(createEl('span', { className: 'pipeline-arrow', textContent: '\u2192' }));
+    p.appendChild(createEl('div', { className: 'pipeline-node code', textContent: row[1] }));
+    p.appendChild(createEl('span', { className: 'pipeline-arrow', textContent: '\u2192' }));
+    p.appendChild(createEl('div', { className: 'pipeline-node output', textContent: row[2] }));
+    pipeCard.appendChild(p);
+  });
+  pipeCard.appendChild(createEl('p', { textContent: 'Change any data file, reload browser, game changes. Zero TypeScript modifications. That is the thesis.', style: 'margin-top:12px' }));
+  main.appendChild(pipeCard);
+
+  // Architecture card
+  var archCard = createEl('div', { className: 'card' });
+  archCard.appendChild(createEl('h3', { textContent: 'Architecture Separation' }));
+  var archGrid = createEl('div', { className: 'arch-grid' });
+  var leftBox = createEl('div', { className: 'arch-box left' });
+  leftBox.appendChild(createEl('div', { className: 'arch-label', style: 'color:var(--accent)', textContent: 'state/ + systems/ + events/' }));
+  leftBox.appendChild(createEl('div', { className: 'arch-desc', textContent: 'Pure TypeScript. Zero Phaser imports. Unit-testable in Node.' }));
+  archGrid.appendChild(leftBox);
+  var rightBox = createEl('div', { className: 'arch-box right' });
+  rightBox.appendChild(createEl('div', { className: 'arch-label', style: 'color:var(--primary)', textContent: 'rendering/' }));
+  rightBox.appendChild(createEl('div', { className: 'arch-desc', textContent: 'Phaser scenes. Reads state via getState(), only calls submitAnswer().' }));
+  archGrid.appendChild(rightBox);
+  archCard.appendChild(archGrid);
+  archCard.appendChild(createEl('div', { style: 'text-align:center;margin-top:12px;font-size:12px;color:var(--health)', textContent: 'EventBus is the sole bridge between them' }));
+  main.appendChild(archCard);
+
+  // Sim card
+  var simCard = createEl('div', { className: 'card' });
+  simCard.appendChild(createEl('h3', { textContent: 'Battle Simulator' }));
+  simCard.appendChild(createEl('p', { textContent: 'Try the game flow below - simulates the exact BattleSystem.ts state machine logic.' }));
+  main.appendChild(simCard);
+
+  renderBattleSim(main);
+  updatePrompt('overview');
+}
+
+function showFile(name) {
+  var f = FILES.find(function(fi) { return fi.name === name; });
+  if (!f) return;
+  document.querySelectorAll('.tree li').forEach(function(li) { li.classList.remove('selected'); });
+  var el = document.getElementById('file-' + name);
+  if (el) el.classList.add('selected');
+
+  var main = document.getElementById('mainContent');
+  clearEl(main);
+  var title = createEl('h2', {}, [document.createTextNode(f.name + ' '), createEl('span', { className: 'file-badge', textContent: f.path })]);
+  main.appendChild(title);
+  main.appendChild(createEl('p', { className: 'subtitle', textContent: f.desc }));
+
+  var apiCard = createEl('div', { className: 'card' });
+  apiCard.appendChild(createEl('h3', { textContent: 'API' }));
+  apiCard.appendChild(createEl('div', { className: 'code-block', textContent: f.api }));
+  main.appendChild(apiCard);
+
+  var ruleCard = createEl('div', { className: 'card' });
+  ruleCard.appendChild(createEl('h3', { textContent: 'Architecture Rule' }));
+  ruleCard.appendChild(createEl('p', { textContent: f.rule }));
+  main.appendChild(ruleCard);
+
+  updatePrompt('file', f);
+}
+
+function showState(name) {
+  var s = STATES.find(function(st) { return st.name === name; });
+  if (!s) return;
+  var main = document.getElementById('mainContent');
+  clearEl(main);
+  main.appendChild(createEl('h2', { textContent: s.name }));
+  main.appendChild(createEl('p', { className: 'subtitle', textContent: s.desc }));
+
+  var eventsInState = EVENTS.filter(function(e) {
+    if (name === 'BATTLE_INTRO') return e.name === 'BATTLE_START';
+    if (name === 'QUESTION_DISPLAY') return e.name === 'QUESTION_SHOW';
+    if (name === 'ANSWER_RESOLVE') return ['ANSWER_CORRECT','ANSWER_WRONG','ATTACK_PLAYER','ATTACK_OPPONENT','HP_CHANGED','SHOW_EXPLANATION'].indexOf(e.name) >= 0;
+    if (name === 'VICTORY') return e.name === 'VICTORY';
+    if (name === 'DEFEAT') return e.name === 'DEFEAT';
+    return false;
+  });
+
+  var evCard = createEl('div', { className: 'card' });
+  evCard.appendChild(createEl('h3', { textContent: 'Events Emitted in This Phase' }));
+  eventsInState.forEach(function(e) {
+    var box = createEl('div', { style: 'padding:8px 12px;background:var(--bg);border-radius:6px;margin-bottom:6px;border-left:3px solid var(--health)' });
+    box.appendChild(createEl('div', { style: 'font-family:var(--mono);font-size:12px;color:var(--health)', textContent: e.name }));
+    box.appendChild(createEl('div', { style: 'font-size:11px;color:var(--muted);margin-top:2px', textContent: e.flow }));
+    evCard.appendChild(box);
+  });
+  main.appendChild(evCard);
+
+  var tCard = createEl('div', { className: 'card' });
+  tCard.appendChild(createEl('h3', { textContent: 'Transitions' }));
+  tCard.appendChild(createEl('p', { textContent: TRANSITIONS[name] || '' }));
+  main.appendChild(tCard);
+
+  updatePrompt('state', s);
+}
+
+function showEvent(name) {
+  var e = EVENTS.find(function(ev) { return ev.name === name; });
+  if (!e) return;
+  var main = document.getElementById('mainContent');
+  clearEl(main);
+  main.appendChild(createEl('h2', { textContent: e.name }));
+  main.appendChild(createEl('p', { className: 'subtitle', textContent: e.flow }));
+
+  var emCard = createEl('div', { className: 'card' });
+  emCard.appendChild(createEl('h3', { textContent: 'Emitted By' }));
+  emCard.appendChild(createEl('p', { style: 'font-family:var(--mono);font-size:13px', textContent: e.emitter }));
+  main.appendChild(emCard);
+
+  var lisCard = createEl('div', { className: 'card' });
+  lisCard.appendChild(createEl('h3', { textContent: 'Listeners' }));
+  lisCard.appendChild(createEl('p', { style: 'font-family:var(--mono);font-size:13px', textContent: e.listeners }));
+  main.appendChild(lisCard);
+
+  var payCard = createEl('div', { className: 'card' });
+  payCard.appendChild(createEl('h3', { textContent: 'Payload' }));
+  payCard.appendChild(createEl('div', { className: 'code-block', textContent: e.payload }));
+  main.appendChild(payCard);
+
+  updatePrompt('event', e);
+}
+
+// ─── BATTLE SIMULATOR ──────────────────────────────────────────────
+function renderBattleSim(parent) {
+  var s = simState;
+  var q = s.questions[s.questionIndex];
+
+  if (s.gameOver) {
+    var isVictory = s.playerHp > s.opponentHp;
+    var banner = createEl('div', { className: 'result-banner ' + (isVictory ? 'victory' : 'defeat'), textContent: (isVictory ? 'VICTORY!' : 'DEFEAT') + ' \u2014 Score: ' + s.score + '/5' });
+    parent.appendChild(banner);
+  }
+
+  // Characters
+  var sim = createEl('div', { className: 'battle-sim' });
+
+  var playerCard = createEl('div', { className: 'char-card player' });
+  playerCard.appendChild(createEl('div', { className: 'char-icon', textContent: '\u2694\uFE0F' }));
+  playerCard.appendChild(createEl('div', { className: 'char-name', textContent: 'Player' }));
+  var playerBar = createEl('div', { className: 'hp-bar' });
+  playerBar.appendChild(createEl('div', { className: 'hp-fill', style: 'width:' + s.playerHp + '%' }));
+  playerCard.appendChild(playerBar);
+  playerCard.appendChild(createEl('div', { className: 'hp-text', textContent: s.playerHp + ' / 100 HP' }));
+  sim.appendChild(playerCard);
+
+  sim.appendChild(createEl('div', { className: 'vs-text', textContent: 'VS' }));
+
+  var oppCard = createEl('div', { className: 'char-card opponent' });
+  oppCard.appendChild(createEl('div', { className: 'char-icon', textContent: '\uD83D\uDC79' }));
+  oppCard.appendChild(createEl('div', { className: 'char-name', textContent: 'Opponent' }));
+  var oppBar = createEl('div', { className: 'hp-bar' });
+  oppBar.appendChild(createEl('div', { className: 'hp-fill', style: 'width:' + s.opponentHp + '%' }));
+  oppCard.appendChild(oppBar);
+  oppCard.appendChild(createEl('div', { className: 'hp-text', textContent: s.opponentHp + ' / 100 HP' }));
+  sim.appendChild(oppCard);
+  parent.appendChild(sim);
+
+  // Question
+  if (s.phase === 'QUESTION_DISPLAY' && !s.gameOver && q) {
+    var qBox = createEl('div', { className: 'question-box' });
+    qBox.appendChild(createEl('div', { className: 'q-text', textContent: 'Q' + (s.questionIndex + 1) + '/5: ' + q.q }));
+    var grid = createEl('div', { className: 'answer-grid' });
+    q.opts.forEach(function(opt, i) {
+      var btn = createEl('button', { className: 'answer-btn', textContent: opt, onClick: function() { simAnswer(i); } });
+      if (s.answered) btn.disabled = true;
+      grid.appendChild(btn);
+    });
+    qBox.appendChild(grid);
+    var expBox = createEl('div', { className: 'explanation-box', id: 'simExplanation', textContent: q.explanation });
+    qBox.appendChild(expBox);
+    parent.appendChild(qBox);
+  }
+
+  // Controls
+  var controls = createEl('div', { className: 'sim-controls' });
+  if (s.phase === 'BATTLE_INTRO') {
+    controls.appendChild(createEl('button', { className: 'sim-btn primary', textContent: 'Start Battle', onClick: simStart }));
+  }
+  if (s.gameOver) {
+    controls.appendChild(createEl('button', { className: 'sim-btn primary', textContent: 'Play Again', onClick: simReset }));
+  }
+  controls.appendChild(createEl('button', { className: 'sim-btn danger', textContent: 'Reset', onClick: simReset }));
+  parent.appendChild(controls);
+
+  // Log
+  var logEl = createEl('div', { className: 'sim-log', id: 'simLog' });
+  s.log.forEach(function(l) {
+    logEl.appendChild(createEl('div', { className: 'log-entry ' + l.type + '-log', textContent: l.text }));
+  });
+  parent.appendChild(logEl);
+}
+
+function simStart() {
+  simState.phase = 'QUESTION_DISPLAY';
+  simState.answered = false;
+  simState.log.push({ type: 'system', text: 'Battle started! Answer 5 Thermodynamics questions.' });
+  showOverview();
+  renderStateMachine();
+  updatePrompt('sim');
+}
+
+function simAnswer(index) {
+  if (simState.answered || simState.gameOver) return;
+  simState.answered = true;
+  var q = simState.questions[simState.questionIndex];
+  var correct = index === q.correct;
+
+  // Visual feedback on buttons
+  var btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(function(b, i) {
+    b.disabled = true;
+    if (i === index && correct) b.classList.add('correct');
+    if (i === index && !correct) b.classList.add('wrong');
+    if (i === q.correct && !correct) b.classList.add('highlight');
+  });
+
+  if (correct) {
+    simState.opponentHp = Math.max(0, simState.opponentHp - 20);
+    simState.score++;
+    simState.log.push({ type: 'correct', text: 'Q' + (simState.questionIndex+1) + ': Correct! Opponent takes 20 damage. (' + simState.opponentHp + ' HP)' });
+  } else {
+    simState.playerHp = Math.max(0, simState.playerHp - 20);
+    simState.log.push({ type: 'wrong', text: 'Q' + (simState.questionIndex+1) + ': Wrong! Player takes 20 damage. (' + simState.playerHp + ' HP)' });
+    var expEl = document.getElementById('simExplanation');
+    if (expEl) expEl.style.display = 'block';
+  }
+
+  simState.questionIndex++;
+
+  // Check end conditions (same order as BattleSystem.ts)
+  if (simState.opponentHp <= 0) {
+    simState.phase = 'VICTORY'; simState.gameOver = true;
+    simState.log.push({ type: 'victory', text: 'VICTORY! Score: ' + simState.score + '/5' });
+  } else if (simState.playerHp <= 0) {
+    simState.phase = 'DEFEAT'; simState.gameOver = true;
+    simState.log.push({ type: 'wrong', text: 'DEFEAT! Score: ' + simState.score + '/5' });
+  } else if (simState.questionIndex >= 5) {
+    var won = simState.playerHp > simState.opponentHp;
+    simState.phase = won ? 'VICTORY' : 'DEFEAT'; simState.gameOver = true;
+    simState.log.push({ type: won ? 'victory' : 'wrong', text: (won ? 'VICTORY' : 'DEFEAT') + ' by HP! Player: ' + simState.playerHp + ', Opponent: ' + simState.opponentHp + '. Score: ' + simState.score + '/5' });
+  }
+
+  var delay = correct ? 800 : 1800;
+  setTimeout(function() {
+    if (!simState.gameOver) { simState.answered = false; }
+    showOverview();
+    renderStateMachine();
+  }, delay);
+
+  renderStateMachine();
+  updatePrompt('sim');
+}
+
+function simReset() {
+  resetSim();
+  showOverview();
+  renderStateMachine();
+}
+
+// ─── TABS ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  var tabs = document.querySelectorAll('.tab');
+  var idx = tab === 'files' ? 0 : tab === 'states' ? 1 : 2;
+  if (tabs[idx]) tabs[idx].classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'files') showOverview();
+}
+
+// ─── PROMPT ────────────────────────────────────────────────────────
+function updatePrompt(type, data) {
+  var el = document.getElementById('promptText');
+  var stubFiles = FILES.filter(function(f) { return f.status === 'stub'; }).map(function(f) { return f.name; });
+  if (type === 'overview') {
+    el.textContent = 'Implement the Arena Battle rendering layer. 60% complete.\n\nStubs remaining: ' + stubFiles.join(', ') + '.\n\nRendering subscribes to EventBus, reads state via getState(), only calls submitAnswer(). All animations from animation-spec.json, all sounds from sound-params.json.';
+  } else if (type === 'file') {
+    el.textContent = 'Implement ' + data.name + ' at ' + data.path + '.\n\n' + data.desc + '\n\nAPI: ' + data.api + '\n\nRule: ' + data.rule;
+  } else if (type === 'state') {
+    el.textContent = data.name + ' phase: ' + data.desc + '\n\nTransitions: ' + (TRANSITIONS[data.name] || '');
+  } else if (type === 'event') {
+    el.textContent = 'Handle ' + data.name + '.\nEmitter: ' + data.emitter + '\nListeners: ' + data.listeners + '\nPayload: ' + data.payload + '\nFlow: ' + data.flow;
+  } else if (type === 'sim') {
+    var s = simState;
+    if (s.gameOver) {
+      el.textContent = 'Battle: ' + s.phase + '. Score: ' + s.score + '/5. Player HP: ' + s.playerHp + ', Opponent HP: ' + s.opponentHp + '.';
+    } else {
+      el.textContent = 'Phase: ' + s.phase + '. Q' + (s.questionIndex + 1) + '/5. Player: ' + s.playerHp + ' HP, Opponent: ' + s.opponentHp + ' HP. Score: ' + s.score + '.';
+    }
+  }
+}
+
+document.getElementById('copyBtn').addEventListener('click', function() {
+  var text = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+  });
+});
+
+// ─── INIT ──────────────────────────────────────────────────────────
+renderTabs();
+renderFileTree();
+renderStateMachine();
+renderEventList();
+showOverview();
+</script>
+</body>
+</html>

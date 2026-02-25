@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="ph_skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c090"/><stop offset="100%" stop-color="#c8956a"/></linearGradient>
+    <linearGradient id="ph_skinSh" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b87a50"/><stop offset="100%" stop-color="#8a5a38"/></linearGradient>
+    <linearGradient id="ph_gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#1a4a8a"/></linearGradient>
+    <linearGradient id="ph_giDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a6abf"/><stop offset="100%" stop-color="#0e2a55"/></linearGradient>
+    <linearGradient id="ph_pants" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8e8f0"/><stop offset="100%" stop-color="#8888a0"/></linearGradient>
+    <linearGradient id="ph_pantsDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#aaaabc"/><stop offset="100%" stop-color="#555568"/></linearGradient>
+    <linearGradient id="ph_belt" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#222"/><stop offset="100%" stop-color="#444"/></linearGradient>
+    <linearGradient id="ph_band" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#2266cc"/></linearGradient>
+    <linearGradient id="ph_hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient>
+    <radialGradient id="ph_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.4"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <filter id="ph_glow"><feGaussianBlur stdDeviation="2" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="54" cy="122" rx="22" ry="5" fill="url(#ph_shadow)"/>
+  <!-- Recoiling left -->
+  <g transform="rotate(-10,60,90)">
+    <!-- Back leg -->
+    <path d="M46,90 L40,108 L36,118 L46,118 L48,108 L48,90Z" fill="url(#ph_pantsDk)"/>
+    <path d="M36,116 L46,118 L48,120 L34,120Z" fill="#333"/>
+    <!-- Front leg -->
+    <path d="M60,86 L66,102 L70,114 L80,112 L74,104 L66,88Z" fill="url(#ph_pants)"/>
+    <path d="M70,112 L80,112 L82,116 L68,118Z" fill="#333"/>
+    <!-- Belt -->
+    <rect x="42" y="84" width="26" height="5" rx="1" fill="url(#ph_belt)"/>
+    <!-- Back arm (flung back) -->
+    <path d="M40,52 L30,44 L22,36 L26,34 L34,42 L42,50Z" fill="url(#ph_skinSh)"/>
+    <ellipse cx="24" cy="35" rx="3.5" ry="3" fill="url(#ph_skinSh)"/>
+    <!-- Torso (recoiling) -->
+    <path d="M42,50 L38,58 L40,88 L66,86 L70,58 L66,48Z" fill="url(#ph_gi)"/>
+    <path d="M66,86 L70,58 L66,48" fill="url(#ph_giDk)" opacity="0.6"/>
+    <!-- Front arm (dropped, guarding) -->
+    <path d="M66,48 L76,56 L80,70 L76,74 L72,68 L66,54Z" fill="url(#ph_skin)"/>
+    <ellipse cx="78" cy="73" rx="4" ry="3.5" fill="url(#ph_skin)"/>
+    <!-- Shoulders -->
+    <ellipse cx="42" cy="50" rx="5" ry="4" fill="url(#ph_giDk)"/>
+    <ellipse cx="68" cy="48" rx="5.5" ry="4" fill="url(#ph_gi)"/>
+    <!-- Neck -->
+    <path d="M52,38 L62,38 L64,48 L50,48Z" fill="url(#ph_skin)"/>
+    <!-- Head (thrown back from hit) -->
+    <path d="M42,18 Q40,6 56,4 Q70,4 72,14 L74,20 L74,32 Q72,38 58,38 Q44,38 42,32Z" fill="url(#ph_skin)"/>
+    <path d="M68,14 L72,14 L74,20 L74,32 Q72,38 66,38 L66,14" fill="url(#ph_skinSh)" opacity="0.35"/>
+    <!-- Hair -->
+    <path d="M42,18 Q40,4 54,2 Q64,2 72,10 L74,14 L72,8 L64,2 L54,2 L46,6 L42,14Z" fill="url(#ph_hair)"/>
+    <!-- Headband -->
+    <path d="M42,16 Q44,14 56,12 Q68,12 74,16 L74,20 Q68,16 56,16 Q44,18 42,20Z" fill="url(#ph_band)"/>
+    <!-- Eye (wincing) -->
+    <path d="M64,22 L70,21 L70,24 L64,23Z" fill="rgba(0,0,0,0.2)"/>
+    <!-- Mouth (pain) -->
+    <path d="M64,32 Q66,30 70,32" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+    <!-- Impact flash -->
+    <circle cx="72" cy="54" r="8" fill="rgba(255,80,80,0.35)" filter="url(#ph_glow)"/>
+    <circle cx="74" cy="52" r="4" fill="rgba(255,120,120,0.3)"/>
+  </g>
+</svg>

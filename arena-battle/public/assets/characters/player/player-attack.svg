@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="pa_skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c090"/><stop offset="100%" stop-color="#c8956a"/></linearGradient>
+    <linearGradient id="pa_skinSh" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b87a50"/><stop offset="100%" stop-color="#8a5a38"/></linearGradient>
+    <linearGradient id="pa_gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#1a4a8a"/></linearGradient>
+    <linearGradient id="pa_giDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a6abf"/><stop offset="100%" stop-color="#0e2a55"/></linearGradient>
+    <linearGradient id="pa_pants" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8e8f0"/><stop offset="100%" stop-color="#8888a0"/></linearGradient>
+    <linearGradient id="pa_pantsDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#aaaabc"/><stop offset="100%" stop-color="#555568"/></linearGradient>
+    <linearGradient id="pa_belt" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#222"/><stop offset="100%" stop-color="#444"/></linearGradient>
+    <linearGradient id="pa_band" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#2266cc"/></linearGradient>
+    <linearGradient id="pa_hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient>
+    <radialGradient id="pa_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.5"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pa_punchGlow"><stop offset="0%" stop-color="#4ae0ff" stop-opacity="0.7"/><stop offset="50%" stop-color="#4a9eff" stop-opacity="0.3"/><stop offset="100%" stop-color="#4a9eff" stop-opacity="0"/></radialGradient>
+    <filter id="pa_glow"><feGaussianBlur stdDeviation="2" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="64" cy="122" rx="26" ry="5" fill="url(#pa_shadow)"/>
+  <!-- Lunge forward -->
+  <g transform="rotate(8,56,90)">
+    <!-- Back leg (left, pushing off) -->
+    <path d="M42,90 L34,108 L30,118 L40,118 L44,108 L46,90Z" fill="url(#pa_pantsDk)" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>
+    <path d="M30,116 L40,118 L42,120 L28,120Z" fill="#333"/>
+    <!-- Front leg (right, lunging) -->
+    <path d="M60,86 L72,100 L78,110 L82,118 L90,114 L82,106 L74,96 L64,86Z" fill="url(#pa_pants)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+    <path d="M82,116 L90,114 L92,118 L80,120Z" fill="#333"/>
+    <!-- Belt -->
+    <rect x="40" y="84" width="28" height="5" rx="1" fill="url(#pa_belt)"/>
+    <!-- Back arm (left, pulled back) -->
+    <path d="M40,52 L30,46 L24,40 L28,38 L34,44 L42,50Z" fill="url(#pa_skinSh)" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+    <ellipse cx="26" cy="39" rx="3.5" ry="3" fill="url(#pa_skinSh)"/>
+    <!-- Torso (3/4 right, leaning into punch) -->
+    <path d="M42,48 L38,56 L40,88 L68,86 L72,56 L68,46Z" fill="url(#pa_gi)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <path d="M68,86 L72,56 L68,46" fill="url(#pa_giDk)" opacity="0.6"/>
+    <!-- Gi lapel -->
+    <path d="M50,50 L56,48 L66,52 L64,66 L54,68 L50,54Z" fill="rgba(255,255,255,0.06)"/>
+    <!-- Front arm (right, PUNCHING forward) -->
+    <path d="M68,48 L82,44 L96,38 L104,34 L106,40 L98,44 L84,50 L70,52Z" fill="url(#pa_skin)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+    <!-- Punch fist -->
+    <ellipse cx="105" cy="37" rx="5" ry="4.5" fill="url(#pa_skin)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+    <path d="M102,35 L108,35 L108,39 L102,39Z" fill="rgba(255,255,255,0.5)" opacity="0.3"/>
+    <!-- Punch impact energy -->
+    <circle cx="110" cy="37" r="10" fill="url(#pa_punchGlow)" filter="url(#pa_glow)"/>
+    <!-- Speed lines -->
+    <line x1="70" y1="36" x2="95" y2="34" stroke="rgba(74,158,255,0.3)" stroke-width="1"/>
+    <line x1="72" y1="42" x2="95" y2="40" stroke="rgba(74,158,255,0.25)" stroke-width="0.8"/>
+    <line x1="74" y1="48" x2="94" y2="46" stroke="rgba(74,158,255,0.2)" stroke-width="0.6"/>
+    <!-- Shoulders -->
+    <ellipse cx="42" cy="48" rx="5" ry="4" fill="url(#pa_giDk)"/>
+    <ellipse cx="70" cy="48" rx="6" ry="4.5" fill="url(#pa_gi)"/>
+    <!-- Neck -->
+    <path d="M52,38 L62,38 L64,46 L50,46Z" fill="url(#pa_skin)"/>
+    <!-- Head (3/4 right, aggressive lean) -->
+    <path d="M42,16 Q40,4 56,2 Q70,2 72,12 L74,18 L74,30 Q72,36 58,36 Q44,36 42,30Z" fill="url(#pa_skin)" stroke="rgba(0,0,0,0.08)" stroke-width="0.5"/>
+    <path d="M68,12 L72,12 L74,18 L74,30 Q72,36 66,36 L66,12" fill="url(#pa_skinSh)" opacity="0.35"/>
+    <!-- Hair -->
+    <path d="M42,16 Q40,2 54,0 Q64,0 72,8 L74,12 L72,6 L66,2 L56,0 L46,4 L42,12Z" fill="url(#pa_hair)"/>
+    <path d="M72,8 L78,4 L76,10" fill="url(#pa_hair)"/>
+    <!-- Headband -->
+    <path d="M42,14 Q44,12 56,10 Q68,10 74,14 L74,18 Q68,14 56,14 Q44,16 42,18Z" fill="url(#pa_band)" filter="url(#pa_glow)"/>
+    <path d="M42,14 L34,16 L28,22" fill="none" stroke="url(#pa_band)" stroke-width="2" opacity="0.6"/>
+    <!-- Eye (intense) -->
+    <ellipse cx="66" cy="22" rx="3" ry="2.5" fill="#fff"/>
+    <circle cx="68" cy="22" r="1.5" fill="#222"/>
+    <!-- Eyebrow (furrowed) -->
+    <path d="M63,18 L71,16" fill="none" stroke="#2a2a2a" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Mouth (yelling) -->
+    <path d="M62,30 Q66,33 70,30" fill="rgba(0,0,0,0.3)" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>
+  </g>
+</svg>

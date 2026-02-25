@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="pv_skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c090"/><stop offset="100%" stop-color="#c8956a"/></linearGradient>
+    <linearGradient id="pv_skinSh" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b87a50"/><stop offset="100%" stop-color="#8a5a38"/></linearGradient>
+    <linearGradient id="pv_gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#1a4a8a"/></linearGradient>
+    <linearGradient id="pv_giDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a6abf"/><stop offset="100%" stop-color="#0e2a55"/></linearGradient>
+    <linearGradient id="pv_pants" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8e8f0"/><stop offset="100%" stop-color="#8888a0"/></linearGradient>
+    <linearGradient id="pv_pantsDk" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#aaaabc"/><stop offset="100%" stop-color="#555568"/></linearGradient>
+    <linearGradient id="pv_belt" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#222"/><stop offset="100%" stop-color="#444"/></linearGradient>
+    <linearGradient id="pv_band" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4a9eff"/><stop offset="100%" stop-color="#2266cc"/></linearGradient>
+    <linearGradient id="pv_hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#111"/></linearGradient>
+    <radialGradient id="pv_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.45"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pv_aura"><stop offset="0%" stop-color="#4ae0ff" stop-opacity="0.4"/><stop offset="50%" stop-color="#4a9eff" stop-opacity="0.15"/><stop offset="100%" stop-color="#4a9eff" stop-opacity="0"/></radialGradient>
+    <filter id="pv_glow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="60" cy="122" rx="24" ry="5" fill="url(#pv_shadow)"/>
+  <!-- Victory aura -->
+  <ellipse cx="60" cy="65" rx="38" ry="50" fill="url(#pv_aura)" filter="url(#pv_glow)"/>
+  <!-- Back leg -->
+  <path d="M48,88 L44,106 L40,118 L50,118 L52,106 L52,88Z" fill="url(#pv_pantsDk)"/>
+  <path d="M40,116 L50,118 L52,120 L38,120Z" fill="#333"/>
+  <!-- Front leg -->
+  <path d="M62,86 L68,104 L72,118 L82,116 L76,104 L68,86Z" fill="url(#pv_pants)"/>
+  <path d="M72,116 L82,116 L84,120 L70,120Z" fill="#333"/>
+  <!-- Belt -->
+  <rect x="42" y="84" width="28" height="5" rx="1" fill="url(#pv_belt)"/>
+  <!-- Back arm (left, fist at hip) -->
+  <path d="M42,54 L34,58 L32,68 L36,70 L38,62 L44,56Z" fill="url(#pv_skinSh)"/>
+  <ellipse cx="34" cy="69" rx="3.5" ry="3" fill="url(#pv_skinSh)"/>
+  <!-- Torso (tall, proud) -->
+  <path d="M44,48 L40,56 L42,88 L70,86 L74,56 L70,46Z" fill="url(#pv_gi)"/>
+  <path d="M70,86 L74,56 L70,46" fill="url(#pv_giDk)" opacity="0.6"/>
+  <!-- Gi lapel -->
+  <path d="M52,50 L58,48 L68,52 L66,66 L56,68 L52,54Z" fill="rgba(255,255,255,0.06)"/>
+  <!-- Front arm (right, raised high in victory fist pump) -->
+  <path d="M70,46 L78,38 L82,24 L80,18 L76,28 L72,38 L68,44Z" fill="url(#pv_skin)"/>
+  <!-- Raised fist -->
+  <ellipse cx="81" cy="16" rx="5" ry="4.5" fill="url(#pv_skin)" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
+  <path d="M78,14 L84,14 L84,18 L78,18Z" fill="rgba(255,255,255,0.5)" opacity="0.3"/>
+  <!-- Shoulders -->
+  <ellipse cx="44" cy="50" rx="5" ry="4" fill="url(#pv_giDk)"/>
+  <ellipse cx="72" cy="48" rx="6" ry="4.5" fill="url(#pv_gi)"/>
+  <!-- Neck -->
+  <path d="M54,38 L64,38 L66,46 L52,46Z" fill="url(#pv_skin)"/>
+  <!-- Head (3/4 right, looking up proudly) -->
+  <path d="M44,16 Q42,4 58,2 Q72,2 74,12 L76,18 L76,30 Q74,36 60,36 Q46,36 44,30Z" fill="url(#pv_skin)"/>
+  <path d="M70,12 L74,12 L76,18 L76,30 Q74,36 68,36 L68,12" fill="url(#pv_skinSh)" opacity="0.3"/>
+  <!-- Hair -->
+  <path d="M44,16 Q42,2 56,0 Q66,0 74,8 L76,12 L74,6 L66,2 L56,0 L46,4 L44,12Z" fill="url(#pv_hair)"/>
+  <path d="M74,8 L80,4 L78,10" fill="url(#pv_hair)"/>
+  <!-- Headband -->
+  <path d="M44,14 Q46,12 58,10 Q70,10 76,14 L76,18 Q70,14 58,14 Q46,16 44,18Z" fill="url(#pv_band)" filter="url(#pv_glow)"/>
+  <path d="M44,14 L36,16 L30,22" fill="none" stroke="url(#pv_band)" stroke-width="2" opacity="0.6"/>
+  <!-- Eye (confident) -->
+  <ellipse cx="68" cy="22" rx="3" ry="2.5" fill="#fff"/>
+  <circle cx="70" cy="22" r="1.5" fill="#222"/>
+  <circle cx="70.5" cy="21.5" r="0.5" fill="#fff"/>
+  <!-- Eyebrow (raised, confident) -->
+  <path d="M65,18 L73,17" fill="none" stroke="#2a2a2a" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Mouth (grin) -->
+  <path d="M64,30 Q68,34 72,30" fill="rgba(255,255,255,0.4)" stroke="rgba(0,0,0,0.2)" stroke-width="0.6"/>
+</svg>

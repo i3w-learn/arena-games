@@ -1,0 +1,31 @@
+{
+  "playerAttack": {
+    "steps": [
+      { "property": "x", "delta": 40, "duration": 150, "ease": "quad.out" },
+      { "property": "x", "delta": -40, "duration": 120, "ease": "quad.in" }
+    ]
+  },
+  "opponentAttack": {
+    "steps": [
+      { "property": "x", "delta": -40, "duration": 150, "ease": "quad.out" },
+      { "property": "x", "delta": 40, "duration": 120, "ease": "quad.in" }
+    ]
+  },
+  "takeHit": {
+    "steps": [
+      { "property": "alpha", "to": 0.3, "duration": 80, "ease": "linear" },
+      { "property": "alpha", "to": 1, "duration": 80, "ease": "linear" }
+    ],
+    "repeat": 2
+  },
+  "questionSlideIn": {
+    "steps": [
+      { "property": "y", "from": 600, "to": 400, "duration": 300, "ease": "back.out" }
+    ]
+  },
+  "healthBarDecrease": {
+    "property": "scaleX",
+    "duration": 400,
+    "ease": "cubic.out"
+  }
+}

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="oa_skin" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4a878"/><stop offset="100%" stop-color="#a07850"/></linearGradient>
+    <linearGradient id="oa_skinSh" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8a6040"/><stop offset="100%" stop-color="#604028"/></linearGradient>
+    <linearGradient id="oa_vest" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e04060"/><stop offset="100%" stop-color="#6a1828"/></linearGradient>
+    <linearGradient id="oa_vestDk" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#aa2840"/><stop offset="100%" stop-color="#3a0e18"/></linearGradient>
+    <linearGradient id="oa_pants" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a30"/><stop offset="100%" stop-color="#111115"/></linearGradient>
+    <linearGradient id="oa_pantsDk" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a20"/><stop offset="100%" stop-color="#08080a"/></linearGradient>
+    <linearGradient id="oa_wrap" x1="1" y1="0" x2="0" y2="0"><stop offset="0%" stop-color="#e04060"/><stop offset="100%" stop-color="#882030"/></linearGradient>
+    <linearGradient id="oa_hair" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#cc2020"/><stop offset="100%" stop-color="#661010"/></linearGradient>
+    <radialGradient id="oa_shadow"><stop offset="0%" stop-color="#000" stop-opacity="0.55"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <radialGradient id="oa_punchGlow"><stop offset="0%" stop-color="#ff4060" stop-opacity="0.7"/><stop offset="50%" stop-color="#e04060" stop-opacity="0.3"/><stop offset="100%" stop-color="#e04060" stop-opacity="0"/></radialGradient>
+    <filter id="oa_glow"><feGaussianBlur stdDeviation="2" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="62" cy="122" rx="28" ry="6" fill="url(#oa_shadow)"/>
+  <!-- Lunge left toward player -->
+  <g transform="rotate(-10,70,90)">
+    <!-- Back leg (right, pushing off) -->
+    <path d="M82,90 L90,108 L94,118 L84,118 L80,108 L78,90Z" fill="url(#oa_pantsDk)"/>
+    <path d="M84,116 L94,118 L96,120 L82,120Z" fill="#222"/>
+    <!-- Front leg (left, lunging) -->
+    <path d="M60,86 L48,100 L42,110 L38,118 L28,114 L36,106 L46,96 L56,86Z" fill="url(#oa_pants)"/>
+    <path d="M28,114 L38,118 L36,120 L26,118Z" fill="#222"/>
+    <!-- Belt -->
+    <rect x="50" y="84" width="30" height="5" rx="1" fill="#333"/>
+    <!-- Back arm (right, pulled back) -->
+    <path d="M84,52 L94,46 L100,40 L96,38 L90,44 L82,50Z" fill="url(#oa_skinSh)"/>
+    <ellipse cx="98" cy="39" rx="3.5" ry="3" fill="url(#oa_skinSh)"/>
+    <!-- Torso (leaning into attack) -->
+    <path d="M82,48 L86,56 L84,88 L56,86 L50,56 L54,46Z" fill="url(#oa_vest)"/>
+    <path d="M56,86 L50,56 L54,46" fill="url(#oa_vestDk)" opacity="0.6"/>
+    <!-- Front arm (left, PUNCHING toward player) -->
+    <path d="M54,48 L40,44 L24,38 L16,34 L14,40 L22,44 L38,50 L52,52Z" fill="url(#oa_skin)"/>
+    <!-- Punch fist -->
+    <ellipse cx="15" cy="37" rx="5.5" ry="5" fill="url(#oa_skin)" stroke="rgba(255,100,100,0.3)" stroke-width="0.8"/>
+    <path d="M12,35 L18,35 L18,39 L12,39Z" fill="url(#oa_wrap)" opacity="0.5"/>
+    <!-- Punch impact energy -->
+    <circle cx="10" cy="37" r="12" fill="url(#oa_punchGlow)" filter="url(#oa_glow)"/>
+    <!-- Speed lines -->
+    <line x1="52" y1="36" x2="25" y2="34" stroke="rgba(224,64,96,0.3)" stroke-width="1"/>
+    <line x1="50" y1="42" x2="25" y2="40" stroke="rgba(224,64,96,0.25)" stroke-width="0.8"/>
+    <line x1="48" y1="48" x2="26" y2="46" stroke="rgba(224,64,96,0.2)" stroke-width="0.6"/>
+    <!-- Shoulders -->
+    <ellipse cx="82" cy="48" rx="5.5" ry="4" fill="url(#oa_vestDk)"/>
+    <ellipse cx="54" cy="48" rx="6.5" ry="5" fill="url(#oa_vest)"/>
+    <!-- Neck -->
+    <path d="M72,36 L62,36 L60,46 L74,46Z" fill="url(#oa_skin)"/>
+    <!-- Head (aggressive lean) -->
+    <path d="M82,16 Q84,4 68,0 Q54,0 52,10 L50,16 L50,30 Q52,36 66,36 Q80,36 82,30Z" fill="url(#oa_skin)"/>
+    <path d="M56,10 L52,10 L50,16 L50,30 Q52,36 58,36 L58,10" fill="url(#oa_skinSh)" opacity="0.35"/>
+    <!-- Hair -->
+    <path d="M82,16 Q84,2 68,-2 Q60,-2 52,6 L50,10 L52,4 L60,0 L68,-2 L76,2 L82,10Z" fill="url(#oa_hair)"/>
+    <path d="M66,-2 L64,-8 L70,0" fill="url(#oa_hair)"/>
+    <path d="M60,0 L56,-6 L62,0" fill="url(#oa_hair)"/>
+    <!-- Eye (fierce) -->
+    <ellipse cx="56" cy="22" rx="3" ry="2.5" fill="#fff"/>
+    <circle cx="54" cy="22" r="2" fill="#881111"/>
+    <circle cx="53.5" cy="21.5" r="0.6" fill="#ff4444"/>
+    <!-- Eyebrow (furrowed) -->
+    <path d="M60,18 L52,16" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    <!-- Mouth (roaring) -->
+    <path d="M62,30 Q58,34 52,30" fill="rgba(60,0,0,0.4)" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>
+    <!-- Scar -->
+    <path d="M60,18 L54,28" fill="none" stroke="rgba(255,180,180,0.35)" stroke-width="1"/>
+  </g>
+</svg>
