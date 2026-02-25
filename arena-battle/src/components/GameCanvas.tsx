@@ -16,13 +16,18 @@ export function GameCanvas() {
   useEffect(() => {
     if (gameRef.current || !containerRef.current) return;
 
+    // Detect mobile for performance tuning
+    const isMobile = window.matchMedia('(pointer: coarse)').matches
+      || 'ontouchstart' in window
+      || window.innerWidth < 768;
+
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       width: 1600,
       height: 1200,
       parent: containerRef.current,
       transparent: true,
-      antialias: true,
+      antialias: !isMobile,
       roundPixels: true,
       scale: {
         mode: Phaser.Scale.FIT,

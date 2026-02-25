@@ -23,17 +23,27 @@ body,
 }
 
 html {
-  /* Mobile: use dynamic viewport height for full-screen */
+  /* Mobile: use dynamic viewport height with fallback for older iOS */
+  height: 100vh;
   height: 100dvh;
 }
 
 body {
+  height: 100vh;
   height: 100dvh;
   /* Prevent text selection on game UI */
   -webkit-user-select: none;
   user-select: none;
   /* Prevent pull-to-refresh */
   overscroll-behavior-y: contain;
+  /* Prevent iOS double-tap zoom and long-press callout */
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+#root {
+  height: 100vh;
+  height: 100dvh;
 }
 
 body {

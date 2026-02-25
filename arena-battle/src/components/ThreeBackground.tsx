@@ -1,16 +1,25 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 /**
  * Three.js 3D background layer — renders rotating spaceships, alien shapes,
  * and a glowing nebula behind the Phaser canvas. Transparent background
  * so the React starfield shows through.
+ *
+ * Skipped on mobile/touch devices to save WebGL contexts and battery.
  */
 export function ThreeBackground() {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [isMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(pointer: coarse)').matches
+      || 'ontouchstart' in window
+      || window.innerWidth < 768;
+  });
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    // Skip Three.js entirely on mobile — saves WebGL context for Phaser
+    if (isMobile || !mountRef.current) return;
 
     const container = mountRef.current;
     const width = window.innerWidth;
@@ -21,11 +30,31 @@ export function ThreeBackground() {
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.z = 30;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'high-performance' });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'default' });
+    } catch {
+      // WebGL not available — skip gracefully
+      return;
+    }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
+
+    // ── Handle WebGL context loss (common on iOS) ──
+    const canvas = renderer.domElement;
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      cancelAnimationFrame(frameId);
+    };
+    const handleContextRestored = () => {
+      animate();
+    };
+    canvas.addEventListener('webglcontextlost', handleContextLost);
+    canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+    let frameId = 0;
 
     // ── Lighting ──
     const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
@@ -280,7 +309,6 @@ export function ThreeBackground() {
     window.addEventListener('mousemove', onMouseMove, { passive: true });
 
     // ── Animation loop ──
-    let frameId = 0;
     const clock = new THREE.Clock();
 
     const animate = () => {
@@ -332,6 +360,8 @@ export function ThreeBackground() {
     // ── Cleanup ──
     return () => {
       cancelAnimationFrame(frameId);
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('resize', onResize);
       renderer.dispose();
@@ -340,7 +370,7 @@ export function ThreeBackground() {
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div

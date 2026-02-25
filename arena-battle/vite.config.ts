@@ -13,6 +13,10 @@ export default defineConfig({
       '@components': path.resolve(__dirname, 'src/components'),
     },
   },
+  build: {
+    // Ensure compatibility with iOS Safari 14.5+ and modern mobile browsers
+    target: ['es2020', 'safari14', 'chrome87', 'firefox78'],
+  },
   server: {
     open: true,
   },
