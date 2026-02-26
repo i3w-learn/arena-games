@@ -77,6 +77,7 @@ export class BattleSystem {
       eventBus.emit(GameEventType.SHOW_EXPLANATION, {
         explanation: question.explanation,
         correctIndex: question.correctIndex,
+        selectedIndex,
       });
     }
 

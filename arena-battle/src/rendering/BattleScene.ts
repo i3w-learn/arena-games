@@ -50,6 +50,8 @@ export class BattleScene extends Phaser.Scene {
   private questionText!: Phaser.GameObjects.Text;
   private answerButtons: Phaser.GameObjects.Text[] = [];
   private explanationText!: Phaser.GameObjects.Text;
+  private explanationBg!: Phaser.GameObjects.Graphics;
+  private currentQuestion: MCQ | null = null;
   private roundText!: Phaser.GameObjects.Text;
   private timerText!: Phaser.GameObjects.Text;
   private timerEvent?: Phaser.Time.TimerEvent;
@@ -75,6 +77,7 @@ export class BattleScene extends Phaser.Scene {
     this.isAnimating = false;
     this.timeRemaining = 60;
     this.timerEvent = undefined;
+    this.currentQuestion = null;
 
     // Clear stale listeners from any previous run (scene restart)
     eventBus.clear();
@@ -532,10 +535,19 @@ export class BattleScene extends Phaser.Scene {
     cornerPx(30, 1148);
     cornerPx(1558, 1148);
 
-    this.explanationText = this.add.text(800, 1140, '', {
-      fontFamily: READABLE, fontSize: '22px', color: '#8b7ec8', fontStyle: 'italic',
-      wordWrap: { width: 1340 }, align: 'center',
-    }).setOrigin(0.5, 0).setAlpha(0);
+    // ── Explanation panel — sits just below the HUD strip (y=134) ──
+    this.explanationBg = this.add.graphics().setDepth(10).setAlpha(0);
+    this.explanationBg.fillStyle(0x04040f, 0.97);
+    this.explanationBg.fillRect(0, 134, 1600, 166);
+    this.explanationBg.lineStyle(2, C.PURPLE, 0.7);
+    this.explanationBg.lineBetween(0, 134, 1600, 134);
+    this.explanationBg.lineStyle(1, C.BLUE, 0.4);
+    this.explanationBg.lineBetween(0, 300, 1600, 300);
+
+    this.explanationText = this.add.text(800, 152, '', {
+      fontFamily: READABLE, fontSize: '20px', color: '#e8e6e3',
+      wordWrap: { width: 1520 }, align: 'center', lineSpacing: 8,
+    }).setOrigin(0.5, 0).setDepth(11).setAlpha(0);
 
     this.setQuestionUIVisible(false);
   }
@@ -888,6 +900,20 @@ export class BattleScene extends Phaser.Scene {
       if (payload.selectedIndex >= 0 && payload.selectedIndex < 4) {
         this.answerButtons[payload.selectedIndex].setStyle({ backgroundColor: '#1a5a2a', color: '#4eca78' });
       }
+
+      // Show explanation panel below HUD immediately
+      if (this.currentQuestion) {
+        const LABELS = ['A', 'B', 'C', 'D'];
+        const label = payload.selectedIndex >= 0 ? LABELS[payload.selectedIndex] : '';
+        const optText = payload.selectedIndex >= 0 ? `"${this.currentQuestion.options[payload.selectedIndex]}"` : '';
+        const firstLine = label
+          ? `✓  Option ${label} is Correct!   ${optText}`
+          : '✓  Correct!';
+        this.explanationText.setColor('#4eca78');
+        this.explanationText.setText(`${firstLine}\n${this.currentQuestion.explanation}`);
+        this.tweens.killTweensOf([this.explanationBg, this.explanationText]);
+        this.tweens.add({ targets: [this.explanationBg, this.explanationText], alpha: 1, duration: 400, ease: 'power2.out' });
+      }
     });
 
     eventBus.on(GameEventType.ANSWER_WRONG, (...args: unknown[]) => {
@@ -942,12 +968,33 @@ export class BattleScene extends Phaser.Scene {
     });
 
     eventBus.on(GameEventType.SHOW_EXPLANATION, (...args: unknown[]) => {
-      const payload = args[0] as { explanation: string; correctIndex: number };
-      this.explanationText.setText(payload.explanation);
-      this.tweens.add({ targets: this.explanationText, alpha: 1, duration: 300, ease: 'power2.out' });
+      const payload = args[0] as { explanation: string; correctIndex: number; selectedIndex: number };
+      const LABELS = ['A', 'B', 'C', 'D'];
+      const q = this.currentQuestion;
+
+      let firstLine: string;
+      if (q) {
+        const correctLabel = LABELS[payload.correctIndex];
+        const correctOptText = q.options[payload.correctIndex];
+        if (payload.selectedIndex >= 0) {
+          const wrongLabel = LABELS[payload.selectedIndex];
+          firstLine = `✗  Option ${wrongLabel} is wrong   ·   ✓  Correct: Option ${correctLabel} — "${correctOptText}"`;
+        } else {
+          // Timer expired
+          firstLine = `✗  Time's up!   ·   ✓  Correct: Option ${correctLabel} — "${correctOptText}"`;
+        }
+      } else {
+        firstLine = `✓  Correct: Option ${LABELS[payload.correctIndex]}`;
+      }
+
+      this.explanationText.setColor('#ff8888');
+      this.explanationText.setText(`${firstLine}\n${payload.explanation}`);
+      this.tweens.killTweensOf([this.explanationBg, this.explanationText]);
+      this.tweens.add({ targets: [this.explanationBg, this.explanationText], alpha: 1, duration: 300, ease: 'power2.out' });
+
       this.time.delayedCall(1500, () => {
         this.tweens.add({
-          targets: this.explanationText, alpha: 0, duration: 300, ease: 'power2.in',
+          targets: [this.explanationBg, this.explanationText], alpha: 0, duration: 300, ease: 'power2.in',
           onComplete: () => this.advanceAfterResolve(),
         });
       });
@@ -983,6 +1030,14 @@ export class BattleScene extends Phaser.Scene {
 
   /* ── Show a question with stagger animations ─────── */
   private showQuestion(question: MCQ, questionIndex: number): void {
+    this.currentQuestion = question;
+
+    // Hide explanation panel before showing next question
+    this.tweens.killTweensOf([this.explanationBg, this.explanationText]);
+    this.explanationBg.setAlpha(0);
+    this.explanationText.setAlpha(0);
+    this.explanationText.setText('');
+
     this.setQuestionUIVisible(true);
     this.startTimer();
 
