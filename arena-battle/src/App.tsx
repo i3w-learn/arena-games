@@ -65,6 +65,11 @@ const PLANETS: PlanetConfig[] = [
 
 export default function App() {
   const [phase, setPhase] = useState<Phase>('start');
+  const [isMobile] = useState(() =>
+    window.matchMedia('(pointer: coarse)').matches
+    || 'ontouchstart' in window
+    || window.innerWidth < 768
+  );
 
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const planetRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -82,7 +87,9 @@ export default function App() {
       while (layer.firstChild) layer.removeChild(layer.firstChild);
 
       const cfg = LAYERS[li];
-      for (let i = 0; i < cfg.count; i++) {
+      // Reduce star count on mobile to avoid memory pressure
+      const count = isMobile ? Math.floor(cfg.count * 0.3) : cfg.count;
+      for (let i = 0; i < count; i++) {
         const star = document.createElement('div');
         star.className = 'star star-twinkle';
         const size = cfg.minSize + Math.random() * (cfg.maxSize - cfg.minSize);
@@ -148,10 +155,13 @@ export default function App() {
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [isMobile]);
 
   // ── Planet drift animations ──
   useEffect(() => {
+    // Skip infinite GSAP tweens on mobile — saves memory during loading
+    if (isMobile) return;
+
     planetRefs.current.forEach((planet, i) => {
       if (!planet) return;
       const cfg = PLANETS[i];
@@ -176,7 +186,7 @@ export default function App() {
         });
       }
     });
-  }, []);
+  }, [isMobile]);
 
   // ── Game reveal animation (fires once preloader exits) ──
   useEffect(() => {
@@ -268,10 +278,14 @@ export default function App() {
         ))}
       </div>
 
-      {/* Game — fullscreen behind overlays */}
-      <div ref={containerRef} className="game-fullscreen" style={{ opacity: 0 }}>
-        <GameCanvas />
-      </div>
+      {/* Game — on mobile only mount Phaser when we're actually in game phase
+           to avoid competing WebGL contexts crashing iOS Safari.
+           On desktop, mount early so Phaser loads in the background. */}
+      {(!isMobile || phase === 'game') && (
+        <div ref={containerRef} className="game-fullscreen" style={{ opacity: 0 }}>
+          <GameCanvas />
+        </div>
+      )}
 
       {/* Title overlay */}
       <h1

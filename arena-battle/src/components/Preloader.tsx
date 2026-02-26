@@ -51,6 +51,10 @@ interface Props {
 }
 
 export function Preloader({ onComplete }: Props) {
+  const isMobile = window.matchMedia('(pointer: coarse)').matches
+    || 'ontouchstart' in window
+    || window.innerWidth < 768;
+
   const rootRef = useRef<HTMLDivElement>(null);
   const barFillRef = useRef<HTMLDivElement>(null);
   const barGlowRef = useRef<HTMLDivElement>(null);
@@ -123,8 +127,8 @@ export function Preloader({ onComplete }: Props) {
       setWordIdx(idx);
     }, 200);
 
-    // ── Flying spaceship animation (background) ──
-    if (shipRef.current) {
+    // ── Flying spaceship animation (background) — skip on mobile ──
+    if (!isMobile && shipRef.current) {
       const ship = shipRef.current;
       const trail = shipTrailRef.current;
 
@@ -224,8 +228,8 @@ export function Preloader({ onComplete }: Props) {
       { scaleX: 1, duration: 0.6, ease: 'power2.out', delay: 0.8 }
     );
 
-    // ── Spawn bar particles ──
-    if (barParticlesRef.current) {
+    // ── Spawn bar particles — skip on mobile to reduce memory pressure ──
+    if (!isMobile && barParticlesRef.current) {
       const container = barParticlesRef.current;
       const spawnParticle = () => {
         const p = obj.progress;
@@ -583,10 +587,14 @@ function StoryScene({ scene }: { scene: string }) {
 /* ── Tiny star background for preloader ── */
 function PreloaderStars() {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = window.matchMedia('(pointer: coarse)').matches
+    || 'ontouchstart' in window
+    || window.innerWidth < 768;
 
   useEffect(() => {
     if (!ref.current) return;
-    for (let i = 0; i < 60; i++) {
+    const starCount = isMobile ? 20 : 60;
+    for (let i = 0; i < starCount; i++) {
       const s = document.createElement('div');
       s.className = 'star star-twinkle';
       const sz = 0.3 + Math.random() * 1.2;
